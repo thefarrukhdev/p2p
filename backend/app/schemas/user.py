@@ -12,6 +12,7 @@ class UserPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
+    school21_login: str
     telegram_username: str | None = None
     first_name: str | None = None
     last_name: str | None = None
@@ -27,7 +28,6 @@ class UserPublic(BaseModel):
 class UserMe(UserPublic):
     """Full profile for the authenticated user."""
 
-    school21_login: str
     email: str | None = None
     current_location: str | None = None
     peer_points: int

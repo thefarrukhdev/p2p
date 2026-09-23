@@ -286,7 +286,7 @@ export default function SlotDetailPage() {
                   <div className="flex flex-col min-w-0">
                     <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'qituvchi</span>
                     <span className="text-xs font-bold truncate">
-                      {slot.reviewer.first_name || 'Noma\'lum'} {slot.reviewer.last_name || ''}
+                      {slot.reviewer.school21_login} {slot.reviewer.telegram_username ? `(@${slot.reviewer.telegram_username})` : ''}
                     </span>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ export default function SlotDetailPage() {
                   <div className="flex flex-col min-w-0">
                     <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'quvchi</span>
                     <span className="text-xs font-bold truncate">
-                      {slot.reviewee.first_name || 'Noma\'lum'} {slot.reviewee.last_name || ''}
+                      {slot.reviewee.school21_login} {slot.reviewee.telegram_username ? `(@${slot.reviewee.telegram_username})` : ''}
                     </span>
                   </div>
                 </div>

@@ -68,14 +68,14 @@ export function SlotCard({ slot, currentUserId }: SlotCardProps) {
         {slot.reviewer && (
           <div className="flex items-center gap-2 text-[#B0BEC5] min-w-0">
             <User className="h-4 w-4 text-[#38C9E6] flex-shrink-0" />
-            <span className="truncate text-xs">{"O'qituvchi: "}<strong className="text-white font-extrabold">{slot.reviewer.first_name || 'Noma\'lum'} {slot.reviewer.last_name || ''}</strong></span>
+            <span className="truncate text-xs">{"O'qituvchi: "}<strong className="text-white font-extrabold">{slot.reviewer.school21_login}</strong> {slot.reviewer.telegram_username ? `(@${slot.reviewer.telegram_username})` : ''}</span>
           </div>
         )}
         
         {slot.reviewee_project && (
           <div className="flex items-center gap-2 text-[#B0BEC5] min-w-0 mt-1">
             <User className="h-4 w-4 text-[#43E8A0] flex-shrink-0" />
-            <span className="truncate text-xs">{"O'quvchi: "}<strong className="text-white font-extrabold">{slot.reviewee?.first_name || 'Noma\'lum'} {slot.reviewee?.last_name || ''}</strong> ({slot.reviewee_project})</span>
+            <span className="truncate text-xs">{"O'quvchi: "}<strong className="text-white font-extrabold">{slot.reviewee ? slot.reviewee.school21_login : 'Noma\'lum'}</strong> {slot.reviewee?.telegram_username ? `(@${slot.reviewee.telegram_username})` : ''} <span className="text-[#B0BEC5] ml-1">({slot.reviewee_project})</span></span>
           </div>
         )}
       </div>

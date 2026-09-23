@@ -29,6 +29,7 @@ export interface TokenResponse {
 
 export interface UserPublic {
   id: string;
+  school21_login: string;
   telegram_username?: string | null;
   first_name?: string | null;
   last_name?: string | null;
@@ -42,7 +43,6 @@ export interface UserPublic {
 }
 
 export interface UserMe extends UserPublic {
-  school21_login: string;
   email?: string | null;
   current_location?: string | null;
   peer_points: number;
