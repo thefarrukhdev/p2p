@@ -68,6 +68,8 @@ export interface Slot {
   status: SlotStatus;
   is_online: boolean;
   campus: string;
+  reviewer?: UserPublic;
+  reviewee?: UserPublic;
 }
 
 export interface SlotCreate {

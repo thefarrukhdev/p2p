@@ -279,6 +279,30 @@ export default function SlotDetailPage() {
                   </span>
                 </div>
               </div>
+
+              {slot.reviewer && (
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <User className="h-5 w-5 text-[#38C9E6] flex-shrink-0" />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'qituvchi</span>
+                    <span className="text-xs font-bold truncate">
+                      {slot.reviewer.first_name || 'Noma\'lum'} {slot.reviewer.last_name || ''}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {slot.reviewee && (
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <User className="h-5 w-5 text-[#43E8A0] flex-shrink-0" />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'quvchi</span>
+                    <span className="text-xs font-bold truncate">
+                      {slot.reviewee.first_name || 'Noma\'lum'} {slot.reviewee.last_name || ''}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Extra student project detail */}

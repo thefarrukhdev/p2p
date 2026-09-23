@@ -6,6 +6,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.user import UserPublic
+
 
 class SlotCreate(BaseModel):
     reviewer_project: str
@@ -40,6 +42,9 @@ class SlotOut(BaseModel):
     status: str
     is_online: bool
     campus: str
+
+    reviewer: UserPublic | None = None
+    reviewee: UserPublic | None = None
 
 
 class SlotSearchResult(BaseModel):
