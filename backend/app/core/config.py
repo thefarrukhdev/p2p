@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     # App
     SECRET_KEY: str = "change-me"
     DEBUG: bool = False
-    ALLOWED_ORIGINS: str = "https://t.me"
+    ALLOWED_ORIGINS: str = "https://t.me,https://school21-p2p.vercel.app"
 
     # Database / Redis
     DATABASE_URL: str = "postgresql+asyncpg://user:pass@localhost:5432/p2p_db"
