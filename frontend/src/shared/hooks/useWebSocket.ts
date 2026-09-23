@@ -22,9 +22,20 @@ export function useWebSocket() {
 
     const connect = () => {
       if (cancelled) return;
-      const loc = window.location;
-      const protocol = loc.protocol === 'https:' ? 'wss' : 'ws';
-      ws = new WebSocket(`${protocol}://${loc.host}/ws/slots?token=${accessToken}`);
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      let wsUrl = '';
+      
+      if (apiUrl.startsWith('http')) {
+        const url = new URL(apiUrl);
+        const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+        wsUrl = `${protocol}//${url.host}/ws/slots?token=${accessToken}`;
+      } else {
+        const loc = window.location;
+        const protocol = loc.protocol === 'https:' ? 'wss:' : 'ws:';
+        wsUrl = `${protocol}//${loc.host}/ws/slots?token=${accessToken}`;
+      }
+      
+      ws = new WebSocket(wsUrl);
       socketRef.current = ws;
 
       ws.onmessage = (event) => {
