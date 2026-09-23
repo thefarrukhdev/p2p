@@ -163,7 +163,14 @@ export default function SlotDetailPage() {
 
   // Stage flags
   const canCancel = (isReviewer && slot.status !== 'completed' && slot.status !== 'cancelled' && slot.status !== 'absent');
-  const canStart = (slot.status === 'booked' || slot.status === 'in_progress') && (isReviewer || isReviewee);
+  
+  // Can start only if status is booked and we are within 15 minutes of the start time (or past it)
+  const isTimeValidToStart = new Date().getTime() >= new Date(slot.start_time).getTime() - 15 * 60 * 1000;
+  
+  const hasStarted = isReviewer ? slot.reviewer_started : slot.reviewee_started;
+  const partnerStarted = isReviewer ? slot.reviewee_started : slot.reviewer_started;
+  
+  const canStart = slot.status === 'booked' && (isReviewer || isReviewee) && isTimeValidToStart && !hasStarted;
   const canFinish = slot.status === 'in_progress' && (isReviewer || isReviewee);
 
   // Minutes criteria for finishing evaluation: 15 minutes
@@ -316,6 +323,13 @@ export default function SlotDetailPage() {
               {canStart && (
                 <Button variant="primary" onClick={handleStart} disabled={isStartingSlot} className="w-full sm:w-auto font-montserrat uppercase font-extrabold tracking-wider text-xs text-black">
                   <Play className="h-4 w-4 fill-current" /> Darsni boshlash
+                </Button>
+              )}
+
+              {/* Waiting for partner */}
+              {slot.status === 'booked' && hasStarted && (
+                <Button variant="primary" disabled className="w-full sm:w-auto font-montserrat uppercase font-extrabold tracking-wider text-xs text-black opacity-70">
+                  <Clock className="h-4 w-4 fill-current mr-2 animate-pulse" /> Sherik kutilmoqda...
                 </Button>
               )}
 

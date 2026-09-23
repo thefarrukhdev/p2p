@@ -34,6 +34,8 @@ class SlotOut(BaseModel):
     end_time: datetime
     actual_start: datetime | None = None
     actual_end: datetime | None = None
+    reviewer_started: bool = False
+    reviewee_started: bool = False
     duration_minutes: int | None = None
     status: str
     is_online: bool

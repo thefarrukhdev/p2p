@@ -62,6 +62,8 @@ export interface Slot {
   end_time: string;
   actual_start?: string | null;
   actual_end?: string | null;
+  reviewer_started?: boolean;
+  reviewee_started?: boolean;
   duration_minutes?: number | null;
   status: SlotStatus;
   is_online: boolean;
