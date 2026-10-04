@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/shared/lib/i18n';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { settingsService } from '@/features/settings/api';
 import { Skeleton, Modal, PageHeader, Card, Button, EmptyState } from '@/shared/ui';
@@ -9,16 +10,9 @@ import { authService } from '@/features/auth/api';
 import { useAuthStore } from '@/features/auth/store';
 
 const LANGUAGE_OPTIONS = [
-  "O'zbek",
-  'Русский',
-  'English',
-  'Français',
-  'Deutsch',
-  'Español',
-  'Türkçe',
-  'العربية',
-  'فارسی',
-  '中文',
+  { value: 'uz', label: "O'zbek" },
+  { value: 'ru', label: 'Русский' },
+  { value: 'en', label: 'English' },
 ];
 
 export default function SettingsPage() {
@@ -62,6 +56,11 @@ export default function SettingsPage() {
       triggerToast(t('settings.toast.selectLang'), 'error');
       return;
     }
+    
+    // Change actual UI language
+    i18n.changeLanguage(selectedLanguage);
+    localStorage.setItem('preferredLanguage', selectedLanguage);
+    
     updateLanguageMutation.mutate(selectedLanguage);
   };
 
@@ -172,21 +171,15 @@ export default function SettingsPage() {
             </h2>
           </div>
 
-          {/* Existing active keys with 3D badges */}
+          {/* Current Active Language */}
           <div className="flex flex-col gap-2 bg-[#34495E] p-3 sm:p-4 rounded-xl border-2 border-black">
             <span className="text-xs uppercase tracking-wider font-bold font-montserrat text-[#38C9E6]">
               {t('settings.language.active')}
             </span>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {config?.languages && config.languages.length > 0 ? (
-                config.languages.map((l) => (
-                  <span key={l} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-black bg-gradient-to-br from-[#38C9E6] to-[#43E8A0] text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
-                    {l}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-[#B0BEC5] italic">{t('settings.language.title')} tanlanmagan</span>
-              )}
+            <div className="flex mt-1">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-black bg-gradient-to-br from-[#38C9E6] to-[#43E8A0] text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                {LANGUAGE_OPTIONS.find(l => l.value === i18n.language)?.label || i18n.language}
+              </span>
             </div>
           </div>
 
@@ -204,8 +197,8 @@ export default function SettingsPage() {
                 >
                   <option value="" disabled className="bg-[#34495E] text-[#B0BEC5]">-- {t('settings.language.select')} --</option>
                   {LANGUAGE_OPTIONS.map((l) => (
-                    <option key={l} value={l} className="bg-[#2A3442] text-white">
-                      {l}
+                    <option key={l.value} value={l.value} className="bg-[#2A3442] text-white">
+                      {l.label}
                     </option>
                   ))}
                 </select>
@@ -219,32 +212,6 @@ export default function SettingsPage() {
               >
                 {updateLanguageMutation.isPending ? t('settings.language.saving') : t('settings.language.saveBtn')}
               </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Theme Card */}
-        <Card className="flex flex-col gap-4 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-          {/* Section Header */}
-          <div className="flex items-center gap-3 border-b-2 border-black pb-3">
-            <div className="w-8 h-8 rounded-lg bg-[#cdbdff] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] flex-shrink-0">
-              <Eye className="h-4 w-4" />
-            </div>
-            <h2 className="text-sm font-bold uppercase tracking-wider font-montserrat text-white leading-none">
-              {t('settings.theme.title')}
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <p className="text-xs text-[#B0BEC5] leading-relaxed">
-              {t('settings.theme.desc1')} <strong className="text-[#38C9E6]">{t('settings.theme.desc2')}</strong> {t('settings.theme.desc3')} <strong className="text-[#cdbdff]">{t('settings.theme.desc4')}</strong> {t('settings.theme.desc5')}
-            </p>
-
-            <div className="flex items-center gap-3 p-3 sm:p-4 bg-[#34495E] rounded-xl border-2 border-black">
-              <div className="h-3 w-3 rounded-full bg-[#00e676] animate-pulse flex-shrink-0" />
-              <span className="text-[11px] sm:text-xs text-[#B0BEC5] uppercase tracking-wider font-bold">
-                {t('settings.theme.active')}
-              </span>
             </div>
           </div>
         </Card>
