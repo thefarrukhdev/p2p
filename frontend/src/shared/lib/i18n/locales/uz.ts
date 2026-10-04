@@ -25,6 +25,32 @@ export const uz = {
     settings: 'Sozlamalar',
   },
   dashboard: {
+  "reload": "Qayta yuklash",
+  "profile": {
+    "student": "Talaba",
+    "coreProgram": "Asosiy dastur",
+    "levelProgress": "Daraja o'sishi"
+  },
+  "stats": {
+    "coalition": "Koalitsiya",
+    "noCoalition": "Koalitsiya yo'q",
+    "peerPoints": "Peer ballari",
+    "experience": "Tajriba",
+    "location": "Joylashuv",
+    "offline": "Oflayn"
+  },
+  "schedule": {
+    "title": "Mening jadvalim",
+    "viewAll": "Barchasini ko'rish",
+    "empty": "Hali rejalashtirilgan slotlar yo'q",
+    "addSlot": "Slot yaratish",
+    "reviewer": "Reviewer",
+    "reviewee": "Reviewee",
+    "statusOpen": "Ochiq",
+    "statusBooked": "Band qilingan",
+    "statusActive": "Faol"
+  }
+,
     title: 'Boshqaruv Paneli',
     subtitle: 'Xush kelibsiz, platformadagi faolligingiz',
     stats: {

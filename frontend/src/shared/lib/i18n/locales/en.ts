@@ -87,6 +87,32 @@ export const en = {
     },
   },
   dashboard: {
+  "reload": "Reload",
+  "profile": {
+    "student": "Student",
+    "coreProgram": "Core Program",
+    "levelProgress": "Level Progress"
+  },
+  "stats": {
+    "coalition": "Coalition",
+    "noCoalition": "No Coalition",
+    "peerPoints": "Peer Points",
+    "experience": "Experience",
+    "location": "Location",
+    "offline": "Offline"
+  },
+  "schedule": {
+    "title": "My Schedule",
+    "viewAll": "View All",
+    "empty": "No scheduled slots yet",
+    "addSlot": "Create Slot",
+    "reviewer": "Reviewer",
+    "reviewee": "Reviewee",
+    "statusOpen": "Open",
+    "statusBooked": "Booked",
+    "statusActive": "Active"
+  }
+,
     title: 'Dashboard',
     subtitle: 'Welcome to P2P Platform',
     xpProgress: 'XP Progress',

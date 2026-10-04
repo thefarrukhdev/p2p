@@ -87,6 +87,32 @@ export const ru = {
     },
   },
   dashboard: {
+  "reload": "Обновить",
+  "profile": {
+    "student": "Студент",
+    "coreProgram": "Основная программа",
+    "levelProgress": "Прогресс уровня"
+  },
+  "stats": {
+    "coalition": "Коалиция",
+    "noCoalition": "Без коалиции",
+    "peerPoints": "Пир Поинты",
+    "experience": "Опыт",
+    "location": "Локация",
+    "offline": "Офлайн"
+  },
+  "schedule": {
+    "title": "Мое расписание",
+    "viewAll": "Смотреть все",
+    "empty": "Пока нет запланированных слотов",
+    "addSlot": "Создать слот",
+    "reviewer": "Ревьюер",
+    "reviewee": "Ревьюи",
+    "statusOpen": "Открыт",
+    "statusBooked": "Забронирован",
+    "statusActive": "Активен"
+  }
+,
     title: 'Главная панель',
     subtitle: 'Добро пожаловать на P2P платформу',
     xpProgress: 'Прогресс XP',
