@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSlots } from '@/features/slots/hooks';
@@ -20,6 +21,7 @@ import {
 type MainTab = 'my-slots' | 'search';
 
 export default function SlotsPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -414,7 +416,7 @@ export default function SlotsPage() {
                                       </div>
                                       <div className="flex items-center justify-between text-[7px] sm:text-[8px] opacity-80 leading-none">
                                         <span className="uppercase font-mono tracking-tighter">
-                                          {slot.status === 'open' ? 'Ochiq' : slot.status === 'booked' ? 'Band' : slot.status}
+                                          {slot.status === 'open' ? t('slots.statusOpen') : slot.status === 'booked' ? t('slots.statusBooked') : slot.status}
                                         </span>
                                         <span>{slot.is_online ? 'ON' : 'OFF'}</span>
                                       </div>
