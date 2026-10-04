@@ -1,9 +1,9 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { uz } from './locales/uz';
-import { ru } from './locales/ru';
-import { en } from './locales/en';
+import { uz } from './locales/uz/index';
+import { ru } from './locales/ru/index';
+import { en } from './locales/en/index';
 
 const resources = {
   uz: { translation: uz },
