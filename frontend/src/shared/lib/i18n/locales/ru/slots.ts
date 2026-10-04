@@ -1,0 +1,22 @@
+export default {
+  "title": "Слоты",
+  "subtitle": "Найдите или создайте сессию",
+  "searchPlaceholder": "Поиск слотов...",
+  "createSlot": "Создать слот",
+  "filterTrack": "Фильтр по направлению",
+  "filterStatus": "Фильтр по статусу",
+  "date": "Дата",
+  "duration": "Длительность",
+  "reviewer": "Ревьюер",
+  "reviewee": "Ревьюи",
+  "statusOpen": "Открыт",
+  "statusBooked": "Забронирован",
+  "statusInProgress": "В процессе",
+  "statusCompleted": "Завершен",
+  "statusCancelled": "Отменен",
+  "statusAbsent": "Неявка",
+  "bookBtn": "Забронировать",
+  "cancelBtn": "Отмена",
+  "startSession": "Начать сессию",
+  "finishSession": "Завершить сессию"
+};

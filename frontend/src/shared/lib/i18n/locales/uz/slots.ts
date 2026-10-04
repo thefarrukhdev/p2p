@@ -1,0 +1,22 @@
+export default {
+  "title": "Slotlar",
+  "subtitle": "Sessiyani toping yoki yarating",
+  "searchPlaceholder": "Slotlarni qidirish...",
+  "createSlot": "Slot yaratish",
+  "filterTrack": "Yo'nalish bo'yicha filtrlash",
+  "filterStatus": "Holat bo'yicha filtrlash",
+  "date": "Sana",
+  "duration": "Davomiyligi",
+  "reviewer": "Tekshiruvchi",
+  "reviewee": "Tekshiriluvchi",
+  "statusOpen": "Ochiq",
+  "statusBooked": "Band qilingan",
+  "statusInProgress": "Jarayonda",
+  "statusCompleted": "Tugallangan",
+  "statusCancelled": "Bekor qilingan",
+  "statusAbsent": "Qatnashmadi",
+  "bookBtn": "Sessiyani band qilish",
+  "cancelBtn": "Bekor qilish",
+  "startSession": "Sessiyani boshlash",
+  "finishSession": "Sessiyani yakunlash"
+};

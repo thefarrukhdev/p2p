@@ -15,8 +15,8 @@ export default defineConfig(() => {
       port: 5173,
       host: '0.0.0.0',
       proxy: {
-        '/api': { target: 'http://localhost:18000', changeOrigin: true },
-        '/ws': { target: 'ws://localhost:18000', ws: true, changeOrigin: true },
+        '/api': { target: 'https://p2p-r5l6.onrender.com', changeOrigin: true },
+        '/ws': { target: 'wss://p2p-r5l6.onrender.com', ws: true, changeOrigin: true },
       },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       hmr: process.env.DISABLE_HMR !== 'true',

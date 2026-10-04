@@ -1,0 +1,22 @@
+export default {
+  "title": "Slots",
+  "subtitle": "Find or create a peer session",
+  "searchPlaceholder": "Search slots...",
+  "createSlot": "Create Slot",
+  "filterTrack": "Filter by track",
+  "filterStatus": "Filter by status",
+  "date": "Date",
+  "duration": "Duration",
+  "reviewer": "Reviewer",
+  "reviewee": "Reviewee",
+  "statusOpen": "Open",
+  "statusBooked": "Booked",
+  "statusInProgress": "In Progress",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled",
+  "statusAbsent": "Absent",
+  "bookBtn": "Book Session",
+  "cancelBtn": "Cancel",
+  "startSession": "Start Session",
+  "finishSession": "Finish Session"
+};
