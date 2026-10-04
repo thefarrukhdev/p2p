@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSlots } from '@/features/slots/hooks';
 import { useAuth } from '@/features/auth/hooks';
@@ -100,11 +100,20 @@ export default function SlotsPage() {
     );
   };
 
-  const getSlotsForDayAndHour = (day: Date, hour: number) => {
-    return slots.filter((slot) => {
+  const slotsByDayHour = useMemo(() => {
+    const map = new Map<string, typeof slots>();
+    slots.forEach((slot) => {
       const slotDate = new Date(slot.start_time);
-      return isSameDay(slotDate, day) && slotDate.getHours() === hour;
+      const key = `${slotDate.getFullYear()}-${slotDate.getMonth()}-${slotDate.getDate()}-${slotDate.getHours()}`;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(slot);
     });
+    return map;
+  }, [slots]);
+
+  const getSlotsForDayAndHour = (day: Date, hour: number) => {
+    const key = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}-${hour}`;
+    return slotsByDayHour.get(key) || [];
   };
 
   const handleCellClick = (dayDate: Date, hour: number) => {

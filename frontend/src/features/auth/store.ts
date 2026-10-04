@@ -36,6 +36,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'peer-learn-auth-storage',
+      partialize: (state) => ({
+        refreshToken: state.refreshToken,
+        isAuthenticated: state.isAuthenticated,
+        onboardingDone: state.onboardingDone,
+      }),
     }
   )
 );

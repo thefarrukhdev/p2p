@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="text-sm text-[#B0BEC5]">
               Kutilmagan texnik nosozlik yuz berdi. Iltimos, sahifani yangilang yoki tizimga qayta kiring.
             </p>
-            {this.state.error && (
+            {this.state.error && import.meta.env.DEV && (
               <pre className="text-left w-full overflow-x-auto text-xs text-[#B0BEC5] bg-[#1E2A38] p-3 rounded border-2 border-black font-mono max-h-32">
                 {this.state.error.message}
               </pre>
