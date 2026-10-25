@@ -12,4 +12,5 @@ export { EmptyState } from './EmptyState';
 export { PageHeader } from './PageHeader';
 export { ProgressBar } from './ProgressBar';
 export { default as DotField } from './DotField';
+export { LanguageSwitcher } from './LanguageSwitcher';
 export { useToastStore, triggerToast } from '@/shared/stores/toast';
