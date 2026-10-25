@@ -1,11 +1,54 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
-.env
-.venv/
+*.py[cod]
+*$py.class
 *.egg-info/
-.pytest_cache/
-.ruff_cache/
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment and Secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Node / Frontend
 node_modules/
 dist/
+.next/
+.turbo/
+
+# Logs and runtime files
+.logs/
+*.log
+.pids/
+*.pid
+
+# Celery & background tasks
+celerybeat-schedule*
+
+# SQLite / Local DBs
+*.db
+*.sqlite
+*.sqlite3
 .pgdata/
+
+# Testing & Linting caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Tool outputs & visualizers
+graphify-out/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+.directory
+Desktop.ini
