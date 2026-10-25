@@ -14,7 +14,7 @@ VENV="$BACKEND_DIR/.venv"
 PID_DIR="$ROOT_DIR/.pids"
 LOG_DIR="$ROOT_DIR/.logs"
 
-export LD_LIBRARY_PATH=/home/rrangesi/goinfre/db_servers/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+# Local environment
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'

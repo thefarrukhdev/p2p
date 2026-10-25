@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -58,7 +59,8 @@
   --radius-xl: 1rem;      /* 16px */
 }
 
-:root {
+:root, html {
+  color-scheme: dark;
   /* ===== Fon (Background) ===== */
   --bg-primary: #1D2633;      /* Asosiy sahifa foni — eng ko'p ishlatiladigan rang */
   --bg-surface: #2C384A;      /* Kartalar, modal, pill fonlar */
@@ -84,8 +86,17 @@
   --border-color: #324151;
 }
 
-/* Base custom styles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+/* Prevent browser autofill from breaking dark theme inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #090e15 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #18D6C7 !important;
+  color-scheme: dark !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
 
 body {
   font-family: var(--font-sans);
