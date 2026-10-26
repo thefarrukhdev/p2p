@@ -21,7 +21,7 @@ import {
 type MainTab = 'my-slots' | 'search';
 
 export default function SlotsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -137,27 +137,25 @@ export default function SlotsPage() {
     setIsModalOpen(true);
   };
 
-  // Uzbek abbreviations
-  const shortDaysUz = ['Yak', 'Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan'];
-  const monthsUzLat = [
-    'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun',
-    'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr',
-  ];
-
   const formatDayHeader = (date: Date) => {
-    const dayName = shortDaysUz[date.getDay()];
+    const lang = i18n.language === 'ru' ? 'ru-RU' : i18n.language === 'en' ? 'en-US' : 'uz-UZ';
+    const dayName = new Intl.DateTimeFormat(lang, { weekday: 'short' }).format(date);
     const dayNum = date.getDate();
-    const monthName = monthsUzLat[date.getMonth()];
-    return `${dayNum} ${monthName.slice(0, 3)}, ${dayName}`;
+    const monthName = new Intl.DateTimeFormat(lang, { month: 'short' }).format(date);
+    return `${dayNum} ${monthName}, ${dayName}`;
   };
 
   const formatWeekRange = (dates: Date[]) => {
+    if (!dates.length) return '';
     const first = dates[0];
     const last = dates[6];
+    const lang = i18n.language === 'ru' ? 'ru-RU' : i18n.language === 'en' ? 'en-US' : 'uz-UZ';
+    const fMonth = new Intl.DateTimeFormat(lang, { month: 'short' }).format(first);
+    const lMonth = new Intl.DateTimeFormat(lang, { month: 'short' }).format(last);
     if (first.getMonth() === last.getMonth()) {
-      return `${first.getDate()} - ${last.getDate()} ${monthsUzLat[first.getMonth()]}, ${first.getFullYear()}`;
+      return `${first.getDate()} - ${last.getDate()} ${fMonth}, ${first.getFullYear()}`;
     } else {
-      return `${first.getDate()} ${monthsUzLat[first.getMonth()].slice(0, 3)} - ${last.getDate()} ${monthsUzLat[last.getMonth()].slice(0, 3)}, ${first.getFullYear()}`;
+      return `${first.getDate()} ${fMonth} - ${last.getDate()} ${lMonth}, ${first.getFullYear()}`;
     }
   };
 
@@ -297,19 +295,19 @@ export default function SlotsPage() {
                 <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-[#B0BEC5]">
                   <div className="flex items-center gap-1">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#38C9E6] border border-black inline-block" />
-                    <span>Ochiq</span>
+                    <span>{t('slots.statusOpen', 'Ochiq')}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#38C9E6] border border-black inline-block" />
-                    <span>Band</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-indigo-400 border border-black inline-block" />
+                    <span>{t('slots.statusBooked', 'Band')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-500 border border-black inline-block" />
-                    <span>Jarayonda</span>
+                    <span>{t('slots.statusInProgress', 'Jarayonda')}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 border border-black inline-block" />
-                    <span>Tugallangan</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#43E8A0] border border-black inline-block" />
+                    <span>{t('slots.statusCompleted', 'Tugallangan')}</span>
                   </div>
                 </div>
               </div>
@@ -394,13 +392,13 @@ export default function SlotsPage() {
                                 {cellSlots.map((slot) => {
                                   let statusClass = 'bg-[#38C9E6]/15 text-[#38C9E6] border-[#38C9E6]/40 hover:border-[#38C9E6]';
                                   if (slot.status === 'booked') {
-                                    statusClass = 'bg-[#38C9E6]/15 text-[#38C9E6] border-[#38C9E6]/40 hover:border-[#38C9E6]';
+                                    statusClass = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 hover:border-indigo-400';
                                   } else if (slot.status === 'in_progress') {
                                     statusClass = 'bg-amber-500/15 text-amber-400 border-amber-500/40 hover:border-amber-500';
                                   } else if (slot.status === 'completed') {
-                                    statusClass = 'bg-zinc-700/40 text-[#B0BEC5] border-zinc-700 hover:border-zinc-500';
+                                    statusClass = 'bg-[#43E8A0]/15 text-[#43E8A0] border-[#43E8A0]/40 hover:border-[#43E8A0]';
                                   } else if (slot.status === 'cancelled') {
-                                    statusClass = 'bg-red-500/10 text-red-400 border-red-500/20 hover:border-red-500/50';
+                                    statusClass = 'bg-red-500/15 text-red-400 border-red-500/30 hover:border-red-400';
                                   }
 
                                   return (

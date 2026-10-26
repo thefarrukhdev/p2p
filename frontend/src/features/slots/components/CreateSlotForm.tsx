@@ -61,8 +61,11 @@ export function CreateSlotForm({
 
   const onFormSubmit = async (values: FormValues) => {
     try {
-      // Calculate end_time as default +60 minutes to streamline business flow
       const startDt = new Date(values.start_time);
+      if (isNaN(startDt.getTime())) {
+        triggerToast("Boshlanish vaqti noto'g'ri kiritilgan", 'error');
+        return;
+      }
       if (startDt.getTime() < Date.now()) {
         triggerToast("Boshlanish vaqti o'tib ketgan bo'lishi mumkin emas", 'error');
         return;
@@ -76,61 +79,63 @@ export function CreateSlotForm({
         is_online: values.is_online,
       });
     } catch (_e) {
-      // Errors are already handled inside mutate of useSlots hook, but this prevents form submission crash
+      // Handled
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-4 sm:gap-5">
-      {/* Project selector */}
-      <Select
-        label="Siz o'rgata oladigan loyiha"
-        error={errors.reviewer_project?.message}
-        {...register('reviewer_project')}
-      >
-        <option value="" disabled className="bg-[#1E2A38]">-- Tanlang --</option>
-        {teachableProjects.map((proj) => (
-          <option key={proj.id || proj.title} value={proj.title} className="bg-[#34495E]">
-            {proj.title}
-          </option>
-        ))}
-      </Select>
+    <form onSubmit={handleSubmit(onFormSubmit)}>
+      <fieldset disabled={isSubmitting} className="flex flex-col gap-4 sm:gap-5 disabled:opacity-60 transition-opacity">
+        {/* Project selector */}
+        <Select
+          label="Siz o'rgata oladigan loyiha"
+          error={errors.reviewer_project?.message}
+          {...register('reviewer_project')}
+        >
+          <option value="" disabled className="bg-[#1E2A38]">-- Tanlang --</option>
+          {teachableProjects.map((proj) => (
+            <option key={proj.id || proj.title} value={proj.title} className="bg-[#34495E]">
+              {proj.title}
+            </option>
+          ))}
+        </Select>
 
-      {/* Start Date Selection */}
-      <Input
-        type="datetime-local"
-        label="Dars boshlanish vaqti"
-        error={errors.start_time?.message}
-        placeholder="Vaqtni tanlang"
-        {...register('start_time')}
-      />
+        {/* Start Date Selection */}
+        <Input
+          type="datetime-local"
+          label="Dars boshlanish vaqti"
+          error={errors.start_time?.message}
+          placeholder="Vaqtni tanlang"
+          {...register('start_time')}
+        />
 
-      {/* Online/Offline Toggle */}
-      <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-[#1E2A38] border-2 border-black">
-        <label className="flex items-center gap-3 cursor-pointer select-none min-h-[44px]">
-          <input
-            type="checkbox"
-            disabled={isTashkent}
-            className="h-5 w-5 rounded border-black text-[#38C9E6] accent-[#38C9E6] cursor-pointer flex-shrink-0"
-            {...register('is_online')}
-          />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-[#FFFFFF]">Onlayn dars</span>
-            <span className="text-[10px] text-[#B0BEC5]">Masofaviy yoki telegram orqali P2P dars</span>
-          </div>
-        </label>
-        {isTashkent && (
-          <span className="text-[10px] text-[#38C9E6] uppercase tracking-wider font-semibold font-mono mt-1">
-            * Tashkent campusi faqat onlayn rejimlarni qo'llab-quvvatlaydi.
-          </span>
-        )}
-      </div>
+        {/* Online/Offline Toggle */}
+        <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-[#1E2A38] border-2 border-black">
+          <label className="flex items-center gap-3 cursor-pointer select-none min-h-[44px]">
+            <input
+              type="checkbox"
+              disabled={isTashkent || isSubmitting}
+              className="h-5 w-5 rounded border-black text-[#38C9E6] accent-[#38C9E6] cursor-pointer flex-shrink-0"
+              {...register('is_online')}
+            />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-[#FFFFFF]">Onlayn dars</span>
+              <span className="text-[10px] text-[#B0BEC5]">Masofaviy yoki telegram orqali P2P dars</span>
+            </div>
+          </label>
+          {isTashkent && (
+            <span className="text-[10px] text-[#38C9E6] uppercase tracking-wider font-semibold font-mono mt-1">
+              * Tashkent campusi faqat onlayn rejimlarni qo'llab-quvvatlaydi.
+            </span>
+          )}
+        </div>
 
-      <div className="pt-2">
-        <Button type="submit" variant="primary" className="w-full min-h-[44px]" disabled={isSubmitting}>
-          {isSubmitting ? 'Yaratilmoqda...' : 'Slotni tasdiqlash'}
-        </Button>
-      </div>
+        <div className="pt-2">
+          <Button type="submit" variant="primary" className="w-full min-h-[44px]" disabled={isSubmitting}>
+            {isSubmitting ? 'Yaratilmoqda...' : 'Slotni tasdiqlash'}
+          </Button>
+        </div>
+      </fieldset>
     </form>
   );
 }

@@ -29,6 +29,7 @@ export interface TokenResponse {
 
 export interface UserPublic {
   id: string;
+  login?: string | null;
   school21_login: string;
   telegram_username?: string | null;
   first_name?: string | null;
@@ -49,6 +50,7 @@ export interface UserMe extends UserPublic {
   peer_coins: number;
   languages: string[];
   is_admin: boolean;
+  is_superuser?: boolean;
   onboarding_done: boolean;
 }
 

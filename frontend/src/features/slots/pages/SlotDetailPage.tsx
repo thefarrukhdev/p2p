@@ -46,7 +46,13 @@ export default function SlotDetailPage() {
     queryKey: ['slot', id],
     queryFn: () => slotsService.getSlotById(id || ''),
     enabled: !!id,
-    refetchInterval: 10000, // Sync status automatically every 10s
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (!status || ['completed', 'cancelled', 'absent'].includes(status)) {
+        return false;
+      }
+      return 10000;
+    },
   });
 
   const {
@@ -197,9 +203,9 @@ export default function SlotDetailPage() {
   };
 
   const handleConfirmCancel = async () => {
-    setShowCancelModal(false);
     try {
       await cancelSlot({ id: slot.id, reason: cancelReason || undefined });
+      setShowCancelModal(false);
       refetch();
     } catch (_e) { /* handled */ }
   };
@@ -209,9 +215,9 @@ export default function SlotDetailPage() {
   };
 
   const handleConfirmAbsent = async () => {
-    setShowAbsentModal(false);
     try {
       await absentSlot(slot.id);
+      setShowAbsentModal(false);
       refetch();
     } catch (_e) { /* handled */ }
   };

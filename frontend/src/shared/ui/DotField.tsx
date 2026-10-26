@@ -113,10 +113,22 @@ const DotField = memo(({
       dotsRef.current = dots;
     }
 
+    let isRunning = true;
+    let idleFrames = 0;
+
+    function startLoop() {
+      if (!isRunning) {
+        isRunning = true;
+        idleFrames = 0;
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    }
+
     function onMouseMove(e: MouseEvent) {
       const s = sizeRef.current;
       mouseRef.current.x = e.pageX - s.offsetX;
       mouseRef.current.y = e.pageY - s.offsetY;
+      startLoop();
     }
 
     function updateMouseSpeed() {
@@ -227,6 +239,22 @@ const DotField = memo(({
       }
 
       ctx!.fill();
+
+      if (
+        engagement.current < 0.005 &&
+        m.speed === 0 &&
+        !p.sparkle &&
+        Number(p.waveAmplitude || 0) === 0
+      ) {
+        idleFrames++;
+        if (idleFrames > 60) {
+          isRunning = false;
+          rafRef.current = null;
+          return;
+        }
+      } else {
+        idleFrames = 0;
+      }
 
       rafRef.current = requestAnimationFrame(tick);
     }

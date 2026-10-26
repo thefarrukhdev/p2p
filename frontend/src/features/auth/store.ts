@@ -37,6 +37,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'peer-learn-auth-storage',
       partialize: (state) => ({
+        accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
         onboardingDone: state.onboardingDone,
@@ -44,3 +45,23 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+// Cross-tab authentication synchronization
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'peer-learn-auth-storage') {
+      if (!e.newValue) {
+        useAuthStore.getState().logout();
+      } else {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed?.state && !parsed.state.isAuthenticated) {
+            useAuthStore.getState().logout();
+          }
+        } catch {
+          // Ignore JSON parse errors
+        }
+      }
+    }
+  });
+}

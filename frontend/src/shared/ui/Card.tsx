@@ -5,7 +5,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hover?: boolean;
 }
 
-export function Card({ children, className = '', hover = true, ...props }: CardProps) {
+export function Card({ children, className = '', hover = false, ...props }: CardProps) {
   return (
     <div
       className={`bg-[#2A3442] border-2 border-black rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all

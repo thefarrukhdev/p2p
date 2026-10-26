@@ -71,4 +71,35 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
+export function RootRouteError() {
+  const handleReload = () => window.location.reload();
+  const handleHome = () => { window.location.href = '/dashboard'; };
+
+  return (
+    <div className="min-h-screen bg-[#1E2A38] text-white flex flex-col items-center justify-center p-6 text-center select-none font-sans">
+      <div className="border-2 border-black bg-[#2A3442] rounded-3xl max-w-md w-full p-8 flex flex-col items-center gap-5 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="h-16 w-16 rounded-2xl bg-[#34495E] border-2 border-black flex items-center justify-center text-[#FF9B9B] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <AlertTriangle className="h-8 w-8" />
+        </div>
+        <div className="space-y-1">
+          <h1 className="text-xl font-black font-montserrat uppercase tracking-tight text-white">
+            Kutilmagan xatolik yuz berdi
+          </h1>
+          <p className="text-xs text-[#B0BEC5] leading-relaxed">
+            Ushbu sahifani yuklash jarayonida texnik muammo yuz berdi. Iltimos, sahifani yangilang yoki asosiy panelga qayting.
+          </p>
+        </div>
+        <div className="flex gap-3 w-full pt-2">
+          <Button variant="primary" onClick={handleReload} className="flex-1 justify-center gap-2">
+            <RefreshCw className="h-4 w-4" /> Yangilash
+          </Button>
+          <Button variant="secondary" onClick={handleHome} className="flex-1 justify-center">
+            Asosiyga
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 export default ErrorBoundary;

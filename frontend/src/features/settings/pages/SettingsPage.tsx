@@ -372,8 +372,8 @@ export default function SettingsPage() {
                   Bekor qilish
                 </Button>
                 <Button
+                  type="submit"
                   variant="danger"
-                  onClick={() => handleUnlinkSubmit(new Event('submit') as unknown as React.FormEvent)}
                   disabled={isUnlinking || !unlinkPassword}
                   className="w-full sm:flex-1 min-h-11"
                 >

@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '@/app/layout';
 import { AuthGuard, GuestGuard } from '@/features/auth/components';
+import { RootRouteError } from '@/app/ErrorBoundary';
 import { Spinner } from '@/shared/ui';
 
 // Lazy-loaded views (konsolidatsiyadan keyin: 8 sahifa)
@@ -11,8 +12,10 @@ const DashboardPage = lazy(() => import('@/features/dashboard/pages/DashboardPag
 const SlotsPage = lazy(() => import('@/features/slots/pages/SlotsPage'));
 const SlotDetailPage = lazy(() => import('@/features/slots/pages/SlotDetailPage'));
 const LeaderboardPage = lazy(() => import('@/features/leaderboard/pages/LeaderboardPage'));
+const NotificationsPage = lazy(() => import('@/features/notifications/pages/NotificationsPage'));
 const ProfilePage = lazy(() => import('@/features/profile/pages/ProfilePage'));
 const SettingsPage = lazy(() => import('@/features/settings/pages/SettingsPage'));
+const NotFoundPage = lazy(() => import('@/app/NotFoundPage'));
 
 // High-contrast page suspense loader
 const PageSuspense = ({ children }: { children: React.ReactNode }) => (
@@ -23,6 +26,7 @@ export const router = createBrowserRouter([
   // Guest-only area
   {
     path: '/login',
+    errorElement: <RootRouteError />,
     element: (
       <GuestGuard>
         <PageSuspense>
@@ -35,6 +39,7 @@ export const router = createBrowserRouter([
   // Onboarding area (protected)
   {
     path: '/onboarding',
+    errorElement: <RootRouteError />,
     element: (
       <AuthGuard>
         <PageSuspense>
@@ -47,6 +52,7 @@ export const router = createBrowserRouter([
   // Authenticated workspace with global layout
   {
     path: '/',
+    errorElement: <RootRouteError />,
     element: (
       <AuthGuard>
         <AppLayout />
@@ -89,6 +95,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'notifications',
+        element: (
+          <PageSuspense>
+            <NotificationsPage />
+          </PageSuspense>
+        ),
+      },
+      {
         // Profile — o'z profili
         path: 'profile',
         element: (
@@ -117,7 +131,15 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Fallback
-  { path: '*', element: <Navigate to="/dashboard" replace /> },
+  // 404 Fallback page
+  {
+    path: '*',
+    errorElement: <RootRouteError />,
+    element: (
+      <PageSuspense>
+        <NotFoundPage />
+      </PageSuspense>
+    ),
+  },
 ]);
 export default router;

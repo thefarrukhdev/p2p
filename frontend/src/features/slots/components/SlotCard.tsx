@@ -86,7 +86,7 @@ export function SlotCard({ slot, currentUserId }: SlotCardProps) {
           to={`/slots/${slot.id}`}
           className="inline-flex items-center gap-2 text-xs font-black text-[#38C9E6] hover:text-[#43E8A0] uppercase tracking-widest group transition-all duration-150 font-montserrat min-h-[44px] sm:min-h-0"
         >
-          {t('common.search')} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          {t('slots.viewDetails', 'Batafsil')} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
     </Card>

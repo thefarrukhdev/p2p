@@ -61,6 +61,7 @@ api.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({
             resolve: (token) => {
+              originalRequest._retry = true;
               if (originalRequest.headers) {
                 originalRequest.headers.Authorization = `Bearer ${token}`;
               }
@@ -81,8 +82,9 @@ api.interceptors.response.use(
       }
 
       try {
+        const baseURL = (api.defaults.baseURL || '/api/v1').replace(/\/+$/, '');
         const { data } = await axios.post(
-          `${api.defaults.baseURL}/auth/refresh`,
+          `${baseURL}/auth/refresh`,
           { refresh_token: refreshToken }
         );
 

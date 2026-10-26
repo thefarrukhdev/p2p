@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe, ChevronDown, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 
 const languages = [
   { code: 'uz', label: "O'zbek", short: 'UZ' },
@@ -41,49 +40,50 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center justify-center gap-2 px-3 py-1.5 min-h-[40px] text-xs font-semibold text-slate-300 bg-[#16202C]/80 hover:bg-[#1E2B3A] hover:text-white border border-slate-700/70 hover:border-slate-600 rounded-xl shadow-sm backdrop-blur-md transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400/40 cursor-pointer touch-manipulation"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-label="Tilni tanlash"
+        className="inline-flex items-center justify-center gap-2 px-3 py-1.5 min-h-[40px] text-xs font-bold font-montserrat text-white bg-[#2A3442] hover:bg-[#34495E] border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all focus:outline-none focus:ring-2 focus:ring-[#38C9E6] cursor-pointer touch-manipulation"
       >
-        <Globe className="w-3.5 h-3.5 text-cyan-400" />
-        <span className="w-6 text-center font-mono">{currentLang.short}</span>
+        <Globe className="w-3.5 h-3.5 text-[#38C9E6]" />
+        <span className="w-6 text-center font-ibm-plex-mono font-bold">{currentLang.short}</span>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+          className={`w-3.5 h-3.5 text-[#B0BEC5] transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -6, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.96 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 w-36 mt-2 origin-top-right bg-[#16202C]/95 backdrop-blur-xl border border-slate-700/80 rounded-xl shadow-2xl shadow-black/60 focus:outline-none z-50 overflow-hidden p-1.5"
-          >
-            <div className="flex flex-col gap-0.5">
-              {languages.map((lang) => {
-                const isSelected = i18n.language === lang.code;
-                return (
-                  <button
-                    key={lang.code}
-                    type="button"
-                    onClick={() => handleLanguageChange(lang.code)}
-                    className={`w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-between cursor-pointer min-h-[38px] ${
-                      isSelected
-                        ? 'text-cyan-400 bg-cyan-400/10 font-bold'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
-                    }`}
-                  >
-                    <span>{lang.label}</span>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-cyan-400" />}
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <div
+          role="listbox"
+          className="absolute right-0 w-36 mt-2 origin-top-right bg-[#2A3442] border-2 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 overflow-hidden p-1.5 animate-zoom-in"
+        >
+          <div className="flex flex-col gap-1">
+            {languages.map((lang) => {
+              const isSelected = i18n.language === lang.code;
+              return (
+                <button
+                  key={lang.code}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  className={`w-full text-left px-3 py-2 text-xs font-montserrat rounded-xl transition-all flex items-center justify-between cursor-pointer min-h-[38px] ${
+                    isSelected
+                      ? 'text-black bg-gradient-to-r from-[#38C9E6] to-[#43E8A0] font-black border border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]'
+                      : 'text-[#B0BEC5] hover:text-white hover:bg-[#34495E] font-bold'
+                  }`}
+                >
+                  <span>{lang.label}</span>
+                  {isSelected && <Check className="w-3.5 h-3.5 text-black stroke-[3]" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+export default LanguageSwitcher;

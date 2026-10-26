@@ -19,6 +19,7 @@ export function useWebSocket() {
     let cancelled = false;
     let ws: WebSocket | null = null;
     let reconnectTimer: number | null = null;
+    let pingTimer: number | null = null;
 
     const connect = () => {
       if (cancelled) return;
@@ -38,6 +39,19 @@ export function useWebSocket() {
       ws = new WebSocket(wsUrl);
       socketRef.current = ws;
 
+      ws.onopen = () => {
+        // Keep-alive heartbeat interval every 25s
+        pingTimer = window.setInterval(() => {
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            try {
+              ws.send(JSON.stringify({ type: 'ping' }));
+            } catch {
+              /* ignore */
+            }
+          }
+        }, 25000);
+      };
+
       ws.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
@@ -54,6 +68,10 @@ export function useWebSocket() {
         }
       };
 
+      ws.onerror = () => {
+        // Silent error handler — onclose will trigger graceful reconnect
+      };
+
       ws.onclose = (event) => {
         if (cancelled) return;
         // 4401 — autentifikatsiya xatosi
@@ -62,8 +80,9 @@ export function useWebSocket() {
           useAuthStore.getState().logout();
           return;
         }
-        // Kutilmagan uzilish — 3 soniyadan keyin qayta ulanish
-        reconnectTimer = window.setTimeout(connect, 3000);
+        // Kutilmagan uzilish — 3 soniya + jitter bilan qayta ulanish
+        const delay = 3000 + Math.random() * 1000;
+        reconnectTimer = window.setTimeout(connect, delay);
       };
     };
 
@@ -72,6 +91,7 @@ export function useWebSocket() {
     return () => {
       cancelled = true;
       if (reconnectTimer) window.clearTimeout(reconnectTimer);
+      if (pingTimer) window.clearInterval(pingTimer);
       if (ws) {
         // Handler'larni o'chiramiz — cleanup close onclose/onerror'ni trigger qilmasin
         ws.onclose = null;
