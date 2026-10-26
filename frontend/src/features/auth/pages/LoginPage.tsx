@@ -108,24 +108,24 @@ export default function LoginPage() {
       </div>
 
       {/* Top Navigation Bar */}
-      <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between relative z-40">
+      <header className="w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-5 flex items-center justify-between relative z-40">
         {/* Platform Brand Identity */}
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#38C9E6] to-[#43E8A0] flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:rotate-3 transition-transform cursor-pointer">
-            <span className="text-black font-extrabold text-xs tracking-tighter font-montserrat">P2P</span>
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-[#38C9E6] to-[#43E8A0] flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:rotate-3 transition-transform cursor-pointer shrink-0">
+            <span className="text-black font-extrabold text-[11px] sm:text-xs tracking-tighter font-montserrat">P2P</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-extrabold text-white text-base leading-tight font-montserrat tracking-tight">
+            <span className="font-extrabold text-white text-sm sm:text-base leading-tight font-montserrat tracking-tight">
               P2P Platform
             </span>
-            <span className="text-[10px] text-[#38C9E6] font-ibm-plex-mono tracking-widest font-black uppercase">
+            <span className="text-[9px] sm:text-[10px] text-[#38C9E6] font-ibm-plex-mono tracking-widest font-black uppercase">
               Peer Learning
             </span>
           </div>
         </div>
 
         {/* Right Actions: Status Badge & Language */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-[11px] font-bold font-ibm-plex-mono text-[#B0BEC5]">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#43E8A0] opacity-75"></span>
@@ -140,10 +140,24 @@ export default function LoginPage() {
       </header>
 
       {/* Main Showcase & Auth Container */}
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 my-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
-          {/* Left Column: Platform Showcase */}
-          <div className="lg:col-span-7 flex flex-col gap-6 lg:pr-4">
+      <main className="w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12 my-auto relative z-10">
+        {/* Mobile-Only Hero Banner (Above-the-fold) */}
+        <div className="lg:hidden text-center space-y-2 mb-5 sm:mb-6">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold font-montserrat uppercase tracking-wider bg-[#34495E]/80 text-[#38C9E6] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <Code2 className="w-3 h-3 text-[#43E8A0]" />
+            <span>{t('login.badge')}</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black font-montserrat tracking-tight text-white leading-tight">
+            {t('login.heroTitle')}
+          </h1>
+          <p className="text-xs sm:text-sm text-[#B0BEC5] leading-relaxed max-w-sm mx-auto font-sans">
+            {t('login.heroSubtitle')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-center">
+          {/* Left Column: Platform Showcase (Visible on Large Screens) */}
+          <div className="hidden lg:flex lg:col-span-7 flex-col gap-6 lg:pr-4">
             {/* Tag Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold font-montserrat uppercase tracking-wider bg-[#34495E]/80 text-[#38C9E6] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] w-fit backdrop-blur-md">
               <Code2 className="w-3.5 h-3.5 text-[#43E8A0]" />
@@ -221,9 +235,9 @@ export default function LoginPage() {
 
           {/* Right Column: Platform Auth Card */}
           <div className="lg:col-span-5 w-full max-w-md mx-auto">
-            <div className="bg-[#2A3442] border-2 border-black rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-6 relative backdrop-blur-lg">
+            <div className="bg-[#2A3442] border-2 border-black rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-5 sm:gap-6 relative backdrop-blur-lg">
               {/* Card Header */}
-              <div className="flex items-center justify-between border-b-2 border-black pb-4">
+              <div className="flex items-center justify-between border-b-2 border-black pb-3.5 sm:pb-4">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-[#38C9E6] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
                     <Lock className="w-4 h-4" />
@@ -239,7 +253,7 @@ export default function LoginPage() {
                 </span>
               </div>
 
-              <p className="text-xs text-[#B0BEC5] leading-relaxed -mt-2">
+              <p className="text-xs text-[#B0BEC5] leading-relaxed -mt-1 sm:-mt-2">
                 {showOtp ? t('login.otpDescription') : t('login.description')}
               </p>
 
@@ -264,12 +278,14 @@ export default function LoginPage() {
                       <input
                         type="text"
                         disabled={isLoggingIn}
+                        inputMode="text"
                         autoCapitalize="none"
+                        autoCorrect="off"
                         autoComplete="username"
                         spellCheck={false}
                         placeholder={t('login.loginPlaceholder')}
                         {...loginRegister('login')}
-                        className="w-full bg-transparent py-3 pr-3 text-sm text-white placeholder-[#78909C] focus:outline-none font-ibm-plex-mono"
+                        className="w-full bg-transparent py-3 pr-3 text-base sm:text-sm text-white placeholder-[#78909C] focus:outline-none font-ibm-plex-mono"
                       />
                     </div>
                     {loginErrors.login && (
@@ -300,12 +316,12 @@ export default function LoginPage() {
                         autoComplete="current-password"
                         placeholder={t('login.passwordPlaceholder')}
                         {...loginRegister('password')}
-                        className="w-full bg-transparent py-3 pr-2 text-sm text-white placeholder-[#78909C] focus:outline-none"
+                        className="w-full bg-transparent py-3 pr-2 text-base sm:text-sm text-white placeholder-[#78909C] focus:outline-none"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="w-10 h-10 flex items-center justify-center text-[#B0BEC5] hover:text-white transition-colors cursor-pointer mr-1 shrink-0"
+                        className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#B0BEC5] hover:text-white transition-colors cursor-pointer mr-0.5 shrink-0"
                         tabIndex={-1}
                         aria-label="Toggle password visibility"
                       >
@@ -324,11 +340,11 @@ export default function LoginPage() {
                   </div>
 
                   {/* Submit CTA */}
-                  <div className="pt-2">
+                  <div className="pt-1.5 sm:pt-2">
                     <button
                       type="submit"
                       disabled={isLoggingIn}
-                      className="w-full h-12 bg-gradient-to-r from-[#38C9E6] to-[#43E8A0] text-black font-extrabold uppercase tracking-wider font-montserrat text-xs rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full h-12 min-h-[48px] bg-gradient-to-r from-[#38C9E6] to-[#43E8A0] text-black font-extrabold uppercase tracking-wider font-montserrat text-xs sm:text-sm rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoggingIn ? (
                         <>
@@ -348,7 +364,7 @@ export default function LoginPage() {
                 /* Telegram 2FA Verification Form */
                 <form onSubmit={handleVerifySubmit(onVerifySubmit)} className="space-y-4">
                   {/* Telegram Info Box */}
-                  <div className="bg-[#34495E] border-2 border-black p-4 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3">
+                  <div className="bg-[#34495E] border-2 border-black p-3.5 sm:p-4 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3">
                     <div className="flex items-center gap-2 text-[#38C9E6]">
                       <Send className="w-4 h-4 shrink-0" />
                       <span className="text-xs font-bold uppercase tracking-wider font-montserrat">
@@ -363,7 +379,7 @@ export default function LoginPage() {
                         href={loginData.bot_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold font-montserrat uppercase tracking-wider text-white bg-[#229ED9] hover:bg-[#1E8DCE] rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                        className="inline-flex items-center justify-center gap-2 py-2.5 px-4 min-h-[44px] text-xs font-bold font-montserrat uppercase tracking-wider text-white bg-[#229ED9] hover:bg-[#1E8DCE] rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                       >
                         <Send className="w-3.5 h-3.5" />
                         <span>{t('login.openBot')}</span>
@@ -385,12 +401,15 @@ export default function LoginPage() {
                     >
                       <input
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        autoComplete="one-time-code"
                         maxLength={6}
                         autoFocus
                         disabled={isVerifyingCode}
                         placeholder="000000"
                         {...verifyRegister('code')}
-                        className="w-full bg-transparent py-3 px-4 text-center text-2xl tracking-[0.4em] text-white placeholder-[#78909C] focus:outline-none font-ibm-plex-mono font-bold"
+                        className="w-full bg-transparent py-3 px-4 text-center text-2xl tracking-[0.3em] sm:tracking-[0.4em] text-white placeholder-[#78909C] focus:outline-none font-ibm-plex-mono font-bold"
                       />
                     </div>
                     {verifyErrors.code && (
@@ -401,11 +420,11 @@ export default function LoginPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="space-y-3 pt-1">
+                  <div className="space-y-2.5 pt-1">
                     <button
                       type="submit"
                       disabled={isVerifyingCode}
-                      className="w-full h-12 bg-gradient-to-r from-[#38C9E6] to-[#43E8A0] text-black font-extrabold uppercase tracking-wider font-montserrat text-xs rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                      className="w-full h-12 min-h-[48px] bg-gradient-to-r from-[#38C9E6] to-[#43E8A0] text-black font-extrabold uppercase tracking-wider font-montserrat text-xs sm:text-sm rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
                       {isVerifyingCode ? (
                         <>
@@ -423,7 +442,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowOtp(false)}
-                      className="w-full py-2.5 text-xs font-bold uppercase tracking-wider font-montserrat text-[#B0BEC5] hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-2.5 min-h-[44px] text-xs font-bold uppercase tracking-wider font-montserrat text-[#B0BEC5] hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <ArrowLeft className="w-3.5 h-3.5" />
                       <span>{t('login.goBack')}</span>
@@ -433,20 +452,95 @@ export default function LoginPage() {
               )}
 
               {/* Security Badge */}
-              <div className="pt-4 border-t-2 border-black/30 flex items-center justify-center gap-2 text-xs font-ibm-plex-mono text-[#B0BEC5]">
-                <ShieldCheck className="w-4 h-4 text-[#43E8A0]" />
+              <div className="pt-3.5 sm:pt-4 border-t-2 border-black/30 flex items-center justify-center gap-2 text-[11px] sm:text-xs font-ibm-plex-mono text-[#B0BEC5]">
+                <ShieldCheck className="w-4 h-4 text-[#43E8A0] shrink-0" />
                 <span>256-bit xavfsiz shifrlangan ulanish</span>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Mobile-Only Feature Highlights (Below Auth Card) */}
+        <div className="lg:hidden flex flex-col gap-4 mt-8 sm:mt-10 pt-6 border-t-2 border-black/30">
+          <div className="text-center space-y-1">
+            <span className="text-[10px] uppercase font-black tracking-widest text-[#38C9E6] font-ibm-plex-mono">
+              Ekotizim
+            </span>
+            <h2 className="text-base font-extrabold font-montserrat text-white">
+              Platforma afzalliklari
+            </h2>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {/* Mobile Feature 1 */}
+            <div className="bg-[#2A3442] border-2 border-black rounded-2xl p-3.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#38C9E6] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
+                <Users className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col gap-1 min-w-0">
+                <h3 className="text-xs font-extrabold font-montserrat text-white uppercase tracking-wider">
+                  {t('login.slides.p2p.title')}
+                </h3>
+                <p className="text-xs text-[#B0BEC5] leading-relaxed font-sans">
+                  {t('login.slides.p2p.desc')}
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile Feature 2 */}
+            <div className="bg-[#2A3442] border-2 border-black rounded-2xl p-3.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#43E8A0] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
+                <CalendarDays className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col gap-1 min-w-0">
+                <h3 className="text-xs font-extrabold font-montserrat text-white uppercase tracking-wider">
+                  {t('login.slides.slots.title')}
+                </h3>
+                <p className="text-xs text-[#B0BEC5] leading-relaxed font-sans">
+                  {t('login.slides.slots.desc')}
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile Feature 3 */}
+            <div className="bg-[#2A3442] border-2 border-black rounded-2xl p-3.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#F1A700] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
+                <Trophy className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col gap-1 min-w-0">
+                <h3 className="text-xs font-extrabold font-montserrat text-white uppercase tracking-wider">
+                  {t('login.slides.gamification.title')}
+                </h3>
+                <p className="text-xs text-[#B0BEC5] leading-relaxed font-sans">
+                  {t('login.slides.gamification.desc')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Trust Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[11px] font-bold font-ibm-plex-mono text-[#B0BEC5]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <CheckCircle2 className="w-3 h-3 text-[#43E8A0]" />
+              <span>Real-time WebSocket</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <CheckCircle2 className="w-3 h-3 text-[#38C9E6]" />
+              <span>Telegram 2FA</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <CheckCircle2 className="w-3 h-3 text-[#F1A700]" />
+              <span>Ko'nikmalar Radari</span>
+            </span>
+          </div>
+        </div>
       </main>
 
       {/* Platform Footer */}
-      <footer className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-xs font-ibm-plex-mono text-[#85948F] flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10 border-t border-black/20">
+      <footer className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 text-xs font-ibm-plex-mono text-[#85948F] flex flex-col sm:flex-row items-center justify-between gap-2.5 relative z-10 border-t border-black/20 text-center sm:text-left">
         <div>© 2026 P2P Platform. Barcha huquqlar himoyalangan.</div>
-        <div className="flex items-center gap-4 text-[11px]">
-          <span className="text-[#38C9E6]">v2.4.0</span>
+        <div className="flex items-center justify-center gap-3 text-[11px]">
+          <span className="text-[#38C9E6] font-bold">v2.4.0</span>
           <span>•</span>
           <span>Peer Learning Ecosystem</span>
         </div>
