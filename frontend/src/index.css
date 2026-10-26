@@ -93,10 +93,10 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active,
 input:-internal-autofill-selected,
 input:-internal-autofill-previewed {
-  -webkit-box-shadow: 0 0 0 1000px #0D1117 inset !important;
-  box-shadow: 0 0 0 1000px #0D1117 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #34495E inset !important;
+  box-shadow: 0 0 0 1000px #34495E inset !important;
   -webkit-text-fill-color: #ffffff !important;
-  caret-color: #00BFA5 !important;
+  caret-color: #38C9E6 !important;
   color-scheme: dark !important;
   transition: background-color 5000s ease-in-out 0s;
 }

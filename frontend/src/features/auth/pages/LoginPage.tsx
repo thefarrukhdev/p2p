@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from '@/features/auth/hooks';
 import { useAuthStore } from '@/features/auth/store';
-import { LanguageSwitcher } from '@/shared/ui';
+import { LanguageSwitcher, DotField } from '@/shared/ui';
 import {
   User as UserIcon,
   Lock,
@@ -16,6 +16,11 @@ import {
   Send,
   Loader2,
   ShieldCheck,
+  CheckCircle2,
+  Users,
+  CalendarDays,
+  Trophy,
+  Code2,
 } from 'lucide-react';
 import { triggerToast } from '@/shared/stores/toast';
 
@@ -83,235 +88,368 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-slate-100 flex flex-col justify-between select-none font-sans">
-      {/* Clean Top Navigation Bar */}
-      <header className="w-full max-w-5xl mx-auto flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5">
+    <div className="min-h-screen bg-[#1E2A38] text-white flex flex-col justify-between select-none font-sans relative overflow-x-hidden">
+      {/* Platform Interactive Background Dot Matrix */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <DotField
+          dotRadius={1.5}
+          dotSpacing={14}
+          bulgeStrength={67}
+          glowRadius={160}
+          sparkle={false}
+          waveAmplitude={0}
+          cursorRadius={500}
+          cursorForce={0.1}
+          bulgeOnly
+          gradientFrom="rgba(56, 201, 230, 0.25)"
+          gradientTo="rgba(67, 232, 160, 0.18)"
+          glowColor="rgba(56, 201, 230, 0.1)"
+        />
+      </div>
+
+      {/* Top Navigation Bar */}
+      <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between relative z-10">
+        {/* Platform Brand Identity */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#161B22] border border-slate-700/80 flex items-center justify-center shadow-sm">
-            <span className="font-mono font-bold text-sm text-[#00BFA5]">P2P</span>
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#38C9E6] to-[#43E8A0] flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:rotate-3 transition-transform cursor-pointer">
+            <span className="text-black font-extrabold text-xs tracking-tighter font-montserrat">P2P</span>
           </div>
-          <span className="font-semibold text-white tracking-tight text-base font-montserrat">
-            P2P Platform
-          </span>
+          <div className="flex flex-col">
+            <span className="font-extrabold text-white text-base leading-tight font-montserrat tracking-tight">
+              P2P Platform
+            </span>
+            <span className="text-[10px] text-[#38C9E6] font-ibm-plex-mono tracking-widest font-black uppercase">
+              Peer Learning
+            </span>
+          </div>
         </div>
 
-        <LanguageSwitcher />
-      </header>
-
-      {/* Main Centered Content */}
-      <main className="w-full max-w-[400px] mx-auto px-4 my-auto py-8">
-        {/* Clean Auth Card */}
-        <div className="bg-[#161B22] border border-slate-700/60 rounded-2xl p-5 sm:p-8 shadow-xl shadow-black/30">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-xl font-bold text-white tracking-tight">
-              {showOtp ? t('login.otpTitle') : t('login.welcome')}
-            </h1>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-              {showOtp ? t('login.otpDescription') : t('login.description')}
-            </p>
+        {/* Right Actions: Status Badge & Language */}
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-[11px] font-bold font-ibm-plex-mono text-[#B0BEC5]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#43E8A0] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#43E8A0]"></span>
+            </span>
+            <span className="text-white">Tizim faol</span>
+            <span className="text-[#38C9E6]">• Peer Hub</span>
           </div>
 
-          {!showOtp ? (
-            /* Regular Credentials Form */
-            <form onSubmit={handleLoginSubmit(onLoginSubmit)} className="space-y-4">
-              {/* Login Field */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300 block">
-                  {t('login.loginLabel')}
-                </label>
-                <div
-                  className={`flex items-center rounded-xl bg-[#0D1117] border transition-colors ${
-                    loginErrors.login
-                      ? 'border-rose-500'
-                      : 'border-slate-700 hover:border-slate-600 focus-within:border-[#00BFA5]'
-                  }`}
-                >
-                  <div className="pl-3.5 pr-2 text-slate-500">
-                    <UserIcon className="w-4 h-4" />
-                  </div>
-                  <input
-                    type="text"
-                    disabled={isLoggingIn}
-                    autoCapitalize="none"
-                    autoComplete="username"
-                    spellCheck={false}
-                    placeholder={t('login.loginPlaceholder')}
-                    {...loginRegister('login')}
-                    className="w-full bg-transparent py-2.5 pr-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none"
-                  />
+          <LanguageSwitcher />
+        </div>
+      </header>
+
+      {/* Main Showcase & Auth Container */}
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 my-auto relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+          {/* Left Column: Platform Showcase */}
+          <div className="lg:col-span-7 flex flex-col gap-6 lg:pr-4">
+            {/* Tag Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold font-montserrat uppercase tracking-wider bg-[#34495E]/80 text-[#38C9E6] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] w-fit backdrop-blur-md">
+              <Code2 className="w-3.5 h-3.5 text-[#43E8A0]" />
+              <span>{t('login.badge')}</span>
+            </div>
+
+            {/* Headline */}
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-montserrat tracking-tight text-white leading-[1.15]">
+                {t('login.heroTitle')}
+              </h1>
+              <p className="text-sm sm:text-base text-[#B0BEC5] leading-relaxed max-w-xl font-sans">
+                {t('login.heroSubtitle')}
+              </p>
+            </div>
+
+            {/* 3 Interactive Feature Highlights */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+              {/* Feature 1: Peer Reviews */}
+              <div className="bg-[#2A3442]/90 backdrop-blur-md border-2 border-black rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-2.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                <div className="w-9 h-9 rounded-xl bg-[#38C9E6] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
+                  <Users className="w-4 h-4" />
                 </div>
-                {loginErrors.login && (
-                  <p className="text-[11px] text-rose-400 pl-0.5">
-                    {loginErrors.login.message}
-                  </p>
-                )}
+                <h3 className="text-xs font-extrabold font-montserrat text-white uppercase tracking-wider">
+                  {t('login.slides.p2p.title')}
+                </h3>
+                <p className="text-xs text-[#B0BEC5] leading-relaxed font-sans line-clamp-3">
+                  {t('login.slides.p2p.desc')}
+                </p>
               </div>
 
-              {/* Password Field */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300 block">
-                  {t('login.passwordLabel')}
-                </label>
-                <div
-                  className={`flex items-center rounded-xl bg-[#0D1117] border transition-colors ${
-                    loginErrors.password
-                      ? 'border-rose-500'
-                      : 'border-slate-700 hover:border-slate-600 focus-within:border-[#00BFA5]'
-                  }`}
-                >
-                  <div className="pl-3.5 pr-2 text-slate-500">
+              {/* Feature 2: Flexible Slots */}
+              <div className="bg-[#2A3442]/90 backdrop-blur-md border-2 border-black rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-2.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                <div className="w-9 h-9 rounded-xl bg-[#43E8A0] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
+                  <CalendarDays className="w-4 h-4" />
+                </div>
+                <h3 className="text-xs font-extrabold font-montserrat text-white uppercase tracking-wider">
+                  {t('login.slides.slots.title')}
+                </h3>
+                <p className="text-xs text-[#B0BEC5] leading-relaxed font-sans line-clamp-3">
+                  {t('login.slides.slots.desc')}
+                </p>
+              </div>
+
+              {/* Feature 3: Skill Radar & XP */}
+              <div className="bg-[#2A3442]/90 backdrop-blur-md border-2 border-black rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-2.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                <div className="w-9 h-9 rounded-xl bg-[#F1A700] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
+                  <Trophy className="w-4 h-4" />
+                </div>
+                <h3 className="text-xs font-extrabold font-montserrat text-white uppercase tracking-wider">
+                  {t('login.slides.gamification.title')}
+                </h3>
+                <p className="text-xs text-[#B0BEC5] leading-relaxed font-sans line-clamp-3">
+                  {t('login.slides.gamification.desc')}
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Architecture / Trust Indicators */}
+            <div className="flex flex-wrap items-center gap-3 pt-1 text-xs font-bold font-ibm-plex-mono text-[#B0BEC5]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#43E8A0]" />
+                <span>Real-time WebSocket</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#38C9E6]" />
+                <span>Telegram 2FA Himoyasi</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2A3442] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#F1A700]" />
+                <span>Ko'nikmalar Radari</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Right Column: Platform Auth Card */}
+          <div className="lg:col-span-5 w-full max-w-md mx-auto">
+            <div className="bg-[#2A3442] border-2 border-black rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-6 relative backdrop-blur-lg">
+              {/* Card Header */}
+              <div className="flex items-center justify-between border-b-2 border-black pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-[#38C9E6] border-2 border-black flex items-center justify-center text-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] shrink-0">
                     <Lock className="w-4 h-4" />
                   </div>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    disabled={isLoggingIn}
-                    autoComplete="current-password"
-                    placeholder={t('login.passwordPlaceholder')}
-                    {...loginRegister('password')}
-                    className="w-full bg-transparent py-2.5 pr-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="pr-3 text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
-                    tabIndex={-1}
-                    aria-label="Toggle password visibility"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
+                  <div>
+                    <h2 className="text-base sm:text-lg font-black font-montserrat text-white uppercase tracking-tight leading-none">
+                      {showOtp ? t('login.otpTitle') : t('login.welcome')}
+                    </h2>
+                  </div>
+                </div>
+                <span className="text-[10px] font-ibm-plex-mono font-bold px-2 py-0.5 rounded-md bg-[#34495E] text-[#38C9E6] border-2 border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                  PEER AUTH
+                </span>
+              </div>
+
+              <p className="text-xs text-[#B0BEC5] leading-relaxed -mt-2">
+                {showOtp ? t('login.otpDescription') : t('login.description')}
+              </p>
+
+              {!showOtp ? (
+                /* Regular Credentials Form */
+                <form onSubmit={handleLoginSubmit(onLoginSubmit)} className="space-y-4">
+                  {/* Login Field */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs uppercase tracking-wider font-bold font-montserrat text-[#B0BEC5] block">
+                      {t('login.loginLabel')}
+                    </label>
+                    <div
+                      className={`flex items-center rounded-xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                        loginErrors.login
+                          ? 'border-[#FF9B9B]'
+                          : 'focus-within:border-[#38C9E6] focus-within:shadow-[0_0_0_2px_#38C9E6]'
+                      }`}
+                    >
+                      <div className="pl-3.5 pr-2.5 text-[#B0BEC5]">
+                        <UserIcon className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="text"
+                        disabled={isLoggingIn}
+                        autoCapitalize="none"
+                        autoComplete="username"
+                        spellCheck={false}
+                        placeholder={t('login.loginPlaceholder')}
+                        {...loginRegister('login')}
+                        className="w-full bg-transparent py-3 pr-3 text-sm text-white placeholder-[#78909C] focus:outline-none font-ibm-plex-mono"
+                      />
+                    </div>
+                    {loginErrors.login && (
+                      <p className="text-[11px] font-bold text-[#FF9B9B] pl-1 font-ibm-plex-mono">
+                        {loginErrors.login.message}
+                      </p>
                     )}
-                  </button>
-                </div>
-                {loginErrors.password && (
-                  <p className="text-[11px] text-rose-400 pl-0.5">
-                    {loginErrors.password.message}
-                  </p>
-                )}
-              </div>
+                  </div>
 
-              {/* Submit CTA */}
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isLoggingIn}
-                  className="w-full h-11 bg-[#00BFA5] hover:bg-[#00A892] active:bg-[#008E7B] text-slate-950 font-semibold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                >
-                  {isLoggingIn ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
-                      <span>{t('login.loggingIn')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{t('login.loginBtn')}</span>
-                      <ArrowRight className="w-4 h-4 stroke-[2.2]" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          ) : (
-            /* Telegram 2FA Verification Form */
-            <form onSubmit={handleVerifySubmit(onVerifySubmit)} className="space-y-4">
-              {/* Telegram Info Box */}
-              <div className="bg-[#0D1117] border border-sky-500/30 p-4 rounded-xl flex flex-col gap-2.5">
-                <div className="flex items-center gap-2 text-sky-400">
-                  <Send className="w-4 h-4 shrink-0" />
-                  <span className="text-xs font-semibold uppercase tracking-wider">
-                    {t('login.otpTitle')}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {t('login.otpDescription')}
-                </p>
-                {loginData?.bot_url && (
-                  <a
-                    href={loginData.bot_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold text-white bg-[#229ED9] hover:bg-[#1E8DCE] rounded-lg transition-colors mt-0.5"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>{t('login.openBot')}</span>
-                  </a>
-                )}
-              </div>
+                  {/* Password Field */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs uppercase tracking-wider font-bold font-montserrat text-[#B0BEC5] block">
+                      {t('login.passwordLabel')}
+                    </label>
+                    <div
+                      className={`flex items-center rounded-xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                        loginErrors.password
+                          ? 'border-[#FF9B9B]'
+                          : 'focus-within:border-[#38C9E6] focus-within:shadow-[0_0_0_2px_#38C9E6]'
+                      }`}
+                    >
+                      <div className="pl-3.5 pr-2.5 text-[#B0BEC5]">
+                        <Lock className="w-4 h-4" />
+                      </div>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        disabled={isLoggingIn}
+                        autoComplete="current-password"
+                        placeholder={t('login.passwordPlaceholder')}
+                        {...loginRegister('password')}
+                        className="w-full bg-transparent py-3 pr-2 text-sm text-white placeholder-[#78909C] focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="w-10 h-10 flex items-center justify-center text-[#B0BEC5] hover:text-white transition-colors cursor-pointer mr-1 shrink-0"
+                        tabIndex={-1}
+                        aria-label="Toggle password visibility"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                    {loginErrors.password && (
+                      <p className="text-[11px] font-bold text-[#FF9B9B] pl-1 font-ibm-plex-mono">
+                        {loginErrors.password.message}
+                      </p>
+                    )}
+                  </div>
 
-              {/* 6-Digit Code */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300 block text-center">
-                  {t('login.verificationCode')}
-                </label>
-                <div
-                  className={`rounded-xl bg-[#0D1117] border transition-colors ${
-                    verifyErrors.code
-                      ? 'border-rose-500'
-                      : 'border-slate-700 hover:border-slate-600 focus-within:border-[#00BFA5]'
-                  }`}
-                >
-                  <input
-                    type="text"
-                    maxLength={6}
-                    autoFocus
-                    disabled={isVerifyingCode}
-                    placeholder="000000"
-                    {...verifyRegister('code')}
-                    className="w-full bg-transparent py-3 px-4 text-center text-xl tracking-[0.4em] text-white placeholder-slate-600 focus:outline-none font-mono font-semibold"
-                  />
-                </div>
-                {verifyErrors.code && (
-                  <p className="text-[11px] text-rose-400 text-center">
-                    {verifyErrors.code.message}
-                  </p>
-                )}
+                  {/* Submit CTA */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isLoggingIn}
+                      className="w-full h-12 bg-gradient-to-r from-[#38C9E6] to-[#43E8A0] text-black font-extrabold uppercase tracking-wider font-montserrat text-xs rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoggingIn ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-black" />
+                          <span>{t('login.loggingIn')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{t('login.loginBtn')}</span>
+                          <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* Telegram 2FA Verification Form */
+                <form onSubmit={handleVerifySubmit(onVerifySubmit)} className="space-y-4">
+                  {/* Telegram Info Box */}
+                  <div className="bg-[#34495E] border-2 border-black p-4 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-[#38C9E6]">
+                      <Send className="w-4 h-4 shrink-0" />
+                      <span className="text-xs font-bold uppercase tracking-wider font-montserrat">
+                        {t('login.otpTitle')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#B0BEC5] leading-relaxed">
+                      {t('login.otpDescription')}
+                    </p>
+                    {loginData?.bot_url && (
+                      <a
+                        href={loginData.bot_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold font-montserrat uppercase tracking-wider text-white bg-[#229ED9] hover:bg-[#1E8DCE] rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>{t('login.openBot')}</span>
+                      </a>
+                    )}
+                  </div>
+
+                  {/* 6-Digit Code */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider font-montserrat text-[#B0BEC5] block text-center">
+                      {t('login.verificationCode')}
+                    </label>
+                    <div
+                      className={`rounded-xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                        verifyErrors.code
+                          ? 'border-[#FF9B9B]'
+                          : 'focus-within:border-[#38C9E6] focus-within:shadow-[0_0_0_2px_#38C9E6]'
+                      }`}
+                    >
+                      <input
+                        type="text"
+                        maxLength={6}
+                        autoFocus
+                        disabled={isVerifyingCode}
+                        placeholder="000000"
+                        {...verifyRegister('code')}
+                        className="w-full bg-transparent py-3 px-4 text-center text-2xl tracking-[0.4em] text-white placeholder-[#78909C] focus:outline-none font-ibm-plex-mono font-bold"
+                      />
+                    </div>
+                    {verifyErrors.code && (
+                      <p className="text-[11px] font-bold text-[#FF9B9B] text-center font-ibm-plex-mono">
+                        {verifyErrors.code.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="space-y-3 pt-1">
+                    <button
+                      type="submit"
+                      disabled={isVerifyingCode}
+                      className="w-full h-12 bg-gradient-to-r from-[#38C9E6] to-[#43E8A0] text-black font-extrabold uppercase tracking-wider font-montserrat text-xs rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      {isVerifyingCode ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-black" />
+                          <span>{t('login.verifyingOtp')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{t('login.verifyOtp')}</span>
+                          <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowOtp(false)}
+                      className="w-full py-2.5 text-xs font-bold uppercase tracking-wider font-montserrat text-[#B0BEC5] hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>{t('login.goBack')}</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Security Badge */}
+              <div className="pt-4 border-t-2 border-black/30 flex items-center justify-center gap-2 text-xs font-ibm-plex-mono text-[#B0BEC5]">
+                <ShieldCheck className="w-4 h-4 text-[#43E8A0]" />
+                <span>256-bit xavfsiz shifrlangan ulanish</span>
               </div>
-
-              {/* Actions */}
-              <div className="space-y-2 pt-1">
-                <button
-                  type="submit"
-                  disabled={isVerifyingCode}
-                  className="w-full h-11 bg-[#00BFA5] hover:bg-[#00A892] active:bg-[#008E7B] text-slate-950 font-semibold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {isVerifyingCode ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
-                      <span>{t('login.verifyingOtp')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{t('login.verifyOtp')}</span>
-                      <ArrowRight className="w-4 h-4 stroke-[2.2]" />
-                    </>
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowOtp(false)}
-                  className="w-full py-2 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>{t('login.goBack')}</span>
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* Clean Security Badge */}
-          <div className="mt-6 pt-4 border-t border-slate-700/50 flex items-center justify-center gap-1.5 text-slate-500 text-[11px]">
-            <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-            <span>Xavfsiz ulanish (256-bit SSL)</span>
+            </div>
           </div>
         </div>
       </main>
 
-      {/* Clean Footer */}
-      <footer className="w-full max-w-5xl mx-auto px-6 py-6 text-center text-xs text-slate-500">
-        © 2026 P2P Platform. Barcha huquqlar himoyalangan.
+      {/* Platform Footer */}
+      <footer className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-xs font-ibm-plex-mono text-[#85948F] flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10 border-t border-black/20">
+        <div>© 2026 P2P Platform. Barcha huquqlar himoyalangan.</div>
+        <div className="flex items-center gap-4 text-[11px]">
+          <span className="text-[#38C9E6]">v2.4.0</span>
+          <span>•</span>
+          <span>Peer Learning Ecosystem</span>
+        </div>
       </footer>
     </div>
   );
