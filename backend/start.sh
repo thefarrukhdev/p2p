@@ -1,13 +1,17 @@
 #!/bin/bash
 set -e
 
-# ── Start PostgreSQL ─────────────────────────────────────────────────────────
-echo "Starting PostgreSQL..."
-su - postgres -c "/usr/lib/postgresql/*/bin/pg_ctl -D /var/lib/postgresql/data -l /var/lib/postgresql/logfile start"
+export PORT="${PORT:-8000}"
 
-# Create database and user if not exists
-su - postgres -c "psql -tc \"SELECT 1 FROM pg_roles WHERE rolname='peerlearn'\" | grep -q 1 || psql -c \"CREATE USER peerlearn WITH PASSWORD 'strongpassword';\""
-su - postgres -c "psql -tc \"SELECT 1 FROM pg_database WHERE datname='peer_learn'\" | grep -q 1 || psql -c \"CREATE DATABASE peer_learn OWNER peerlearn;\""
+# ── Start PostgreSQL (only if local) ──────────────────────────────────────────
+if [[ -z "$DATABASE_URL" ]] || [[ "$DATABASE_URL" == *"localhost"* ]] || [[ "$DATABASE_URL" == *"127.0.0.1"* ]]; then
+    echo "Starting local PostgreSQL..."
+    su - postgres -c "/usr/lib/postgresql/*/bin/pg_ctl -D /var/lib/postgresql/data -l /var/lib/postgresql/logfile start" || true
+    su - postgres -c "psql -tc \"SELECT 1 FROM pg_roles WHERE rolname='peerlearn'\" | grep -q 1 || psql -c \"CREATE USER peerlearn WITH PASSWORD 'strongpassword';\"" || true
+    su - postgres -c "psql -tc \"SELECT 1 FROM pg_database WHERE datname='peer_learn'\" | grep -q 1 || psql -c \"CREATE DATABASE peer_learn OWNER peerlearn;\"" || true
+else
+    echo "External PostgreSQL configured, skipping local PostgreSQL."
+fi
 
 # ── Start Redis ──────────────────────────────────────────────────────────────
 echo "Starting Redis..."

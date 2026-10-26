@@ -1,6 +1,7 @@
 """Application settings loaded from environment / .env file."""
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,6 +18,15 @@ class Settings(BaseSettings):
     # Database / Redis
     DATABASE_URL: str = "postgresql+asyncpg://user:pass@localhost:5432/p2p_db"
     REDIS_URL: str = "redis://localhost:6379/0"
+
+    @field_validator("DATABASE_URL", mode="after")
+    @classmethod
+    def assemble_db_connection(cls, v: str) -> str:
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql+asyncpg://", 1)
+        if v.startswith("postgresql://") and not v.startswith("postgresql+asyncpg://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     # School21
     SCHOOL21_API_BASE: str = (
