@@ -78,6 +78,9 @@ export function useWebSocket() {
         if (event.code === 4401) {
           triggerToast('Aloqa seansi tugadi, iltimos qayta kiring.', 'error');
           useAuthStore.getState().logout();
+          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
           return;
         }
         // Kutilmagan uzilish — 3 soniya + jitter bilan qayta ulanish
