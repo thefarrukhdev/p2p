@@ -85,7 +85,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#0D1117] text-slate-100 flex flex-col justify-between select-none font-sans">
       {/* Clean Top Navigation Bar */}
-      <header className="w-full max-w-5xl mx-auto flex items-center justify-between px-6 py-5">
+      <header className="w-full max-w-5xl mx-auto flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-[#161B22] border border-slate-700/80 flex items-center justify-center shadow-sm">
             <span className="font-mono font-bold text-sm text-[#00BFA5]">P2P</span>
@@ -101,7 +101,7 @@ export default function LoginPage() {
       {/* Main Centered Content */}
       <main className="w-full max-w-[400px] mx-auto px-4 my-auto py-8">
         {/* Clean Auth Card */}
-        <div className="bg-[#161B22] border border-slate-700/60 rounded-2xl p-7 sm:p-8 shadow-xl shadow-black/30">
+        <div className="bg-[#161B22] border border-slate-700/60 rounded-2xl p-5 sm:p-8 shadow-xl shadow-black/30">
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-xl font-bold text-white tracking-tight">

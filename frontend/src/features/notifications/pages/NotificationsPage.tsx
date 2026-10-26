@@ -30,8 +30,8 @@ export default function NotificationsPage() {
       {/* Title block */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-2 border-black pb-4">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 font-montserrat tracking-tight leading-none">
-            <Bell className="h-6 w-6 text-[#38C9E6]" /> Bildirishnomalar markazi
+          <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 font-montserrat tracking-tight leading-tight">
+            <Bell className="h-6 w-6 text-[#38C9E6] shrink-0" /> Bildirishnomalar markazi
           </h1>
           <p className="text-xs text-[#B0BEC5] leading-relaxed">
             Slotlar darsi, boshlanishi yoki baholash fikrlari bo‘yicha real-vaqt yangiliklari.
@@ -75,7 +75,7 @@ export default function NotificationsPage() {
             <div
               key={notif.id}
               onClick={() => handleMarkOne(notif.id, notif.is_read)}
-              className={`p-4 rounded-2xl border-2 flex items-start justify-between gap-4 transition-all relative group cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+              className={`p-3 sm:p-4 rounded-2xl border-2 flex items-start justify-between gap-3 sm:gap-4 transition-all relative group cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
                 ${
                   !notif.is_read
                     ? 'bg-[#2A3442] border-black border-l-8 border-l-[#38C9E6]'
@@ -83,25 +83,25 @@ export default function NotificationsPage() {
                 }
               `}
             >
-              <div className="flex gap-4">
+              <div className="flex gap-3 sm:gap-4 min-w-0 flex-1">
                 <div className="h-10 w-10 rounded-xl bg-[#34495E] border-2 border-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                   {getNotificationIcon(notif.type)}
                 </div>
 
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-extrabold text-white leading-tight font-montserrat tracking-tight">
+                    <span className="text-sm font-extrabold text-white leading-tight font-montserrat tracking-tight break-words">
                       {notif.title || 'Platforma bildirishnomasi'}
                     </span>
                     {!notif.is_read && (
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#FF9B9B] animate-pulse" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-[#FF9B9B] animate-pulse shrink-0" />
                     )}
                   </div>
-                  <p className="text-xs text-[#B0BEC5] leading-relaxed max-w-2xl">
+                  <p className="text-xs text-[#B0BEC5] leading-relaxed max-w-2xl break-words">
                     {notif.body || 'Yangi bildirishnoma mavjud.'}
                   </p>
                   <span className="text-[9px] text-[#B0BEC5] font-black uppercase tracking-wider mt-1.5 flex items-center gap-1.5 font-montserrat">
-                    <AlertCircle className="h-3 w-3 text-[#38C9E6]" /> {formatRelativeTime(notif.created_at)}
+                    <AlertCircle className="h-3 w-3 text-[#38C9E6] shrink-0" /> {formatRelativeTime(notif.created_at)}
                   </span>
                 </div>
               </div>

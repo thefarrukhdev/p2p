@@ -15,7 +15,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-[#2A3442]/85 backdrop-blur-lg flex items-center justify-around h-16 px-2 shadow-[0_-4px_0px_rgba(0,0,0,0.15)]">
+    <nav className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-[#2A3442]/95 backdrop-blur-lg flex items-center justify-around h-16 pb-[env(safe-area-inset-bottom,0px)] box-content px-2 shadow-[0_-4px_0px_rgba(0,0,0,0.15)] border-t border-black/20">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         return (

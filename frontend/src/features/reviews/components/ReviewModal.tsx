@@ -82,11 +82,11 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
             <label className="text-xs uppercase tracking-wider font-extrabold text-[#B0BEC5] font-montserrat">
               Dars o'tish sifati va ishtiroki
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <button
                 type="button"
                 onClick={() => setIsPositive(true)}
-                className={`p-4 rounded-2xl border-2 border-black flex flex-col items-center gap-2 font-black text-xs transition-all select-none cursor-pointer font-montserrat tracking-wider
+                className={`p-3 sm:p-4 min-h-[48px] rounded-2xl border-2 border-black flex flex-row sm:flex-col items-center justify-center gap-2 font-black text-xs transition-all select-none cursor-pointer font-montserrat tracking-wider
                   ${
                     isPositive
                       ? 'bg-[#263E33] text-[#43E8A0] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -94,13 +94,13 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
                   }
                 `}
               >
-                <ThumbsUp className="h-5 w-5" />
+                <ThumbsUp className="h-5 w-5 shrink-0" />
                 <span>IJOBIY (A'LO)</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIsPositive(false)}
-                className={`p-4 rounded-2xl border-2 border-black flex flex-col items-center gap-2 font-black text-xs transition-all select-none cursor-pointer font-montserrat tracking-wider
+                className={`p-3 sm:p-4 min-h-[48px] rounded-2xl border-2 border-black flex flex-row sm:flex-col items-center justify-center gap-2 font-black text-xs transition-all select-none cursor-pointer font-montserrat tracking-wider
                   ${
                     !isPositive
                       ? 'bg-[#4A2D2D] text-[#FF9B9B] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
@@ -108,7 +108,7 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
                   }
                 `}
               >
-                <ThumbsDown className="h-5 w-5" />
+                <ThumbsDown className="h-5 w-5 shrink-0" />
                 <span>SALBIY (YOMON)</span>
               </button>
             </div>
@@ -116,7 +116,7 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
 
           {/* Comment text block */}
           <div className="flex flex-col gap-2 w-full">
-            <label className="text-xs uppercase tracking-wider font-extrabold text-[#B0BEC5] flex justify-between font-montserrat">
+            <label className="text-xs uppercase tracking-wider font-extrabold text-[#B0BEC5] flex flex-wrap justify-between items-center gap-1 font-montserrat">
               <span>Fikr-mulohaza (Ixtiyoriy)</span>
               <span className="font-ibm-plex-mono text-xs">{commentVal.length} / 500 ta belgi</span>
             </label>

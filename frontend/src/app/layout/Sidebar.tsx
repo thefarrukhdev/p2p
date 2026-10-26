@@ -41,8 +41,8 @@ export function Sidebar({ unreadCount = 0 }: SidebarProps) {
           <span className="text-black font-extrabold text-xs tracking-tighter font-montserrat">P2P</span>
         </div>
         <div className="flex flex-col">
-          <span className="font-extrabold text-white text-base leading-tight font-montserrat tracking-tight">P2P Corpus</span>
-          <span className="text-[10px] text-[#38C9E6] font-ibm-plex-mono tracking-widest font-black mt-0.5">SCHOOL21</span>
+          <span className="font-extrabold text-white text-base leading-tight font-montserrat tracking-tight">P2P Platform</span>
+          <span className="text-[10px] text-[#38C9E6] font-ibm-plex-mono tracking-widest font-black mt-0.5">PEER LEARNING</span>
         </div>
       </div>
 
@@ -50,10 +50,10 @@ export function Sidebar({ unreadCount = 0 }: SidebarProps) {
       {user && (
         <div className="pt-5 pb-1">
           <div className="mx-4 p-3.5 bg-[#34495E] border-2 border-black rounded-2xl flex items-center gap-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group">
-            <Avatar src={user.avatar_url} name={user.school21_login} size="sm" />
+            <Avatar src={user.avatar_url} name={user.login || user.school21_login} size="sm" />
             <div className="flex flex-col min-w-0 flex-grow">
               <span className="text-[11px] font-black text-white truncate max-w-full tracking-tight">
-                {user.first_name || user.school21_login}
+                {user.first_name || user.login || user.school21_login}
               </span>
               <span className="text-[9px] text-[#38C9E6] font-black tracking-widest uppercase">
                 LEVEL {user.level} {user.main_track ? `• ${user.main_track}` : ''}

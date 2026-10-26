@@ -141,26 +141,26 @@ export function SkillsRadarWheel({ userSkills }: SkillsRadarWheelProps) {
 
       {!isCollapsed && (
         <div className="relative w-full flex flex-col items-center justify-center p-2 sm:p-6 overflow-hidden">
-          {/* Zoom / Navigation Controls (Left side matching screenshot) */}
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 bg-[#1E2734]/90 backdrop-blur-xs p-1.5 rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+          {/* Zoom / Navigation Controls */}
+          <div className="absolute right-3 bottom-3 sm:bottom-auto sm:right-auto sm:left-4 sm:top-1/2 sm:-translate-y-1/2 z-20 flex flex-row sm:flex-col gap-1.5 sm:gap-2 bg-[#1E2734]/90 backdrop-blur-xs p-1.5 rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
             <button
               onClick={handleResetZoom}
-              className="h-9 w-9 rounded-xl bg-[#2A3442] hover:bg-[#34495E] border-2 border-black flex items-center justify-center text-[#38C9E6] hover:text-white transition-colors"
+              className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-[#2A3442] hover:bg-[#34495E] border-2 border-black flex items-center justify-center text-[#38C9E6] hover:text-white transition-colors"
               title="Reset Zoom"
             >
               <Move className="h-4 w-4" />
             </button>
-            <div className="h-0.5 w-full bg-black/40 my-0.5" />
+            <div className="w-0.5 sm:w-full h-full sm:h-0.5 bg-black/40 my-0 sm:my-0.5" />
             <button
               onClick={handleZoomIn}
-              className="h-9 w-9 rounded-xl bg-[#2A3442] hover:bg-[#34495E] border-2 border-black flex items-center justify-center text-white font-bold transition-colors"
+              className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-[#2A3442] hover:bg-[#34495E] border-2 border-black flex items-center justify-center text-white font-bold transition-colors"
               title="Zoom In"
             >
               <Plus className="h-4 w-4" />
             </button>
             <button
               onClick={handleZoomOut}
-              className="h-9 w-9 rounded-xl bg-[#2A3442] hover:bg-[#34495E] border-2 border-black flex items-center justify-center text-white font-bold transition-colors"
+              className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-[#2A3442] hover:bg-[#34495E] border-2 border-black flex items-center justify-center text-white font-bold transition-colors"
               title="Zoom Out"
             >
               <Minus className="h-4 w-4" />
@@ -169,12 +169,12 @@ export function SkillsRadarWheel({ userSkills }: SkillsRadarWheelProps) {
 
           {/* Hover Skill Tooltip Indicator */}
           {hoveredSkill && (
-            <div className="absolute top-4 right-4 z-20 bg-[#1E2734] border-2 border-black p-3 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center gap-3 animate-fade-in">
+            <div className="absolute top-2 left-2 right-2 sm:left-auto sm:right-4 sm:top-4 z-20 bg-[#1E2734] border-2 border-black p-3 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center gap-3 animate-fade-in">
               <div className="h-8 w-8 rounded-xl bg-[#38C9E6] text-black font-black text-xs flex items-center justify-center border border-black">
                 {hoveredSkill.points}
               </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-black text-white font-montserrat uppercase">
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-black text-white font-montserrat uppercase truncate">
                   {hoveredSkill.name}
                 </span>
                 <span className="text-[10px] text-[#43E8A0] font-bold">
@@ -187,7 +187,7 @@ export function SkillsRadarWheel({ userSkills }: SkillsRadarWheelProps) {
           {/* SVG Radar Wheel Graphic */}
           <div className="w-full max-w-[700px] aspect-square flex items-center justify-center overflow-hidden">
             <svg
-              viewBox={`0 0 ${size} ${size}`}
+              viewBox={`-35 -30 ${size + 70} ${size + 60}`}
               className="w-full h-full transition-transform duration-300 ease-out select-none"
               style={{ transform: `scale(${zoom})` }}
             >

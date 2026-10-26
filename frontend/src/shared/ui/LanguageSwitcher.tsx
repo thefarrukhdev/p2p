@@ -41,7 +41,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-300 bg-[#16202C]/80 hover:bg-[#1E2B3A] hover:text-white border border-slate-700/70 hover:border-slate-600 rounded-xl shadow-sm backdrop-blur-md transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400/40 cursor-pointer"
+        className="inline-flex items-center justify-center gap-2 px-3 py-1.5 min-h-[40px] text-xs font-semibold text-slate-300 bg-[#16202C]/80 hover:bg-[#1E2B3A] hover:text-white border border-slate-700/70 hover:border-slate-600 rounded-xl shadow-sm backdrop-blur-md transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400/40 cursor-pointer touch-manipulation"
       >
         <Globe className="w-3.5 h-3.5 text-cyan-400" />
         <span className="w-6 text-center font-mono">{currentLang.short}</span>
@@ -69,7 +69,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className = 
                     key={lang.code}
                     type="button"
                     onClick={() => handleLanguageChange(lang.code)}
-                    className={`w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-between cursor-pointer ${
+                    className={`w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-all flex items-center justify-between cursor-pointer min-h-[38px] ${
                       isSelected
                         ? 'text-cyan-400 bg-cyan-400/10 font-bold'
                         : 'text-slate-300 hover:text-white hover:bg-slate-800/80'

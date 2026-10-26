@@ -133,7 +133,7 @@ function OwnProfileView() {
       {/* Profile Header Card */}
       <Card hover={false} className="p-4 sm:p-6 flex flex-col items-center sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 relative overflow-hidden rounded-3xl border-2 border-black bg-[#2A3442] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 w-full sm:w-auto">
-          <Avatar src={user.avatar_url} name={user.school21_login} size="xl" />
+          <Avatar src={user.avatar_url} name={user.login || user.school21_login} size="xl" />
           <div className="flex flex-col items-center sm:items-start gap-1 min-w-0">
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <h2 className="text-base sm:text-lg font-black text-white font-montserrat tracking-tight text-center sm:text-left">
@@ -141,7 +141,7 @@ function OwnProfileView() {
               </h2>
               <Badge type="primary">{`LEVEL ${user.level}`}</Badge>
             </div>
-            <span className="text-xs text-[#38C9E6] font-bold">@{user.school21_login}</span>
+            <span className="text-xs text-[#38C9E6] font-bold">@{user.login || user.school21_login}</span>
             <span className="text-[10px] text-[#B0BEC5] uppercase tracking-wider font-extrabold mt-1 text-center sm:text-left">
               Program: {user.core_program || 'CORE'} • Track: {user.main_track || 'Web'}
             </span>

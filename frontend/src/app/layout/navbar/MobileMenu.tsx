@@ -20,7 +20,7 @@ export function MobileMenu({ user, onClose, onLogout }: MobileMenuProps) {
           {user.avatar_url ? (
             <img
               src={user.avatar_url}
-              alt={user.school21_login}
+              alt={user.login || user.school21_login}
               className="w-10 h-10 rounded-full object-cover border border-gray-900"
               referrerPolicy="no-referrer"
             />
@@ -31,10 +31,10 @@ export function MobileMenu({ user, onClose, onLogout }: MobileMenuProps) {
           )}
           <div className="flex-1 min-w-0 text-left">
             <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
-              @{user.school21_login}
+              @{user.login || user.school21_login}
             </p>
             <p className="text-xs font-ibm-plex-mono text-gray-600 dark:text-gray-400 mt-0.5 truncate">
-              {user.campus || 'School 21'} • Level {user.level || 1}
+              {user.campus || 'Platform'} • Level {user.level || 1}
             </p>
           </div>
         </div>

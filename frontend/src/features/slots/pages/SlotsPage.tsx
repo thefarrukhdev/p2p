@@ -29,7 +29,9 @@ export default function SlotsPage() {
   const [mainTab, setMainTab] = useState<MainTab>('my-slots');
 
   // App layouts: 'calendar' (Scheduler grid) or 'list' (Card layout)
-  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 'list' : 'calendar'
+  );
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prefilledTime, setPrefilledTime] = useState<string>('');
@@ -233,7 +235,7 @@ export default function SlotsPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setViewMode('calendar')}
-                className={`px-3 sm:px-4 py-2 min-h-[44px] font-montserrat text-xs font-black uppercase tracking-widest border-b-4 transition-all duration-150 cursor-pointer flex items-center gap-1.5
+                className={`px-3 sm:px-4 py-2 min-h-[44px] font-montserrat text-[11px] sm:text-xs font-black uppercase tracking-widest border-b-4 transition-all duration-150 cursor-pointer flex items-center gap-1.5
                   ${
                     viewMode === 'calendar'
                       ? 'border-[#38C9E6] text-white'
@@ -242,11 +244,11 @@ export default function SlotsPage() {
                 `}
               >
                 <CalendarDays className="h-4 w-4" />
-                <span className="hidden sm:inline">Jadval</span>
+                <span>Jadval</span>
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-3 sm:px-4 py-2 min-h-[44px] font-montserrat text-xs font-black uppercase tracking-widest border-b-4 transition-all duration-150 cursor-pointer flex items-center gap-1.5
+                className={`px-3 sm:px-4 py-2 min-h-[44px] font-montserrat text-[11px] sm:text-xs font-black uppercase tracking-widest border-b-4 transition-all duration-150 cursor-pointer flex items-center gap-1.5
                   ${
                     viewMode === 'list'
                       ? 'border-[#38C9E6] text-white'
@@ -255,7 +257,7 @@ export default function SlotsPage() {
                 `}
               >
                 <List className="h-4 w-4" />
-                <span className="hidden sm:inline">Ro'yxat</span>
+                <span>Ro'yxat</span>
               </button>
             </div>
           </div>
@@ -286,7 +288,7 @@ export default function SlotsPage() {
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
-                  <span className="text-xs sm:text-sm font-extrabold text-white font-montserrat tracking-tight ml-1 sm:ml-2 truncate">
+                  <span className="w-full sm:w-auto text-xs sm:text-sm font-extrabold text-white font-montserrat tracking-tight mt-1 sm:mt-0 sm:ml-2 truncate">
                     {formatWeekRange(weekDates)}
                   </span>
                 </div>
@@ -444,7 +446,7 @@ export default function SlotsPage() {
                     <button
                       key={opt.key}
                       onClick={() => setStatusFilter(opt.key)}
-                      className={`px-3 py-1.5 min-h-[36px] rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat select-none transition-all border-2 whitespace-nowrap cursor-pointer
+                      className={`px-3 py-2 min-h-[44px] rounded-xl text-xs font-bold uppercase tracking-wider font-montserrat select-none transition-all border-2 whitespace-nowrap cursor-pointer
                         ${
                           statusFilter === opt.key
                             ? 'bg-gradient-to-br from-[#38C9E6] to-[#43E8A0] border-black text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'

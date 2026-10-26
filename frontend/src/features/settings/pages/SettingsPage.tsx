@@ -314,16 +314,21 @@ export default function SettingsPage() {
 
       {/* Unlink Modal */}
       {showUnlinkModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#2A3442] rounded-3xl p-5 sm:p-8 max-w-md w-full border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4 sm:gap-5 animate-fade-in max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-3 sm:p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowUnlinkModal(false);
+          }}
+        >
+          <div className="bg-[#2A3442] rounded-2xl sm:rounded-3xl p-4 sm:p-6 sm:p-8 max-w-md w-full border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4 sm:gap-5 animate-fade-in max-h-[90vh] overflow-y-auto">
 
             <div className="flex justify-between items-center border-b-2 border-black pb-3">
-              <span className="text-base sm:text-lg font-extrabold font-montserrat text-white tracking-tight uppercase">
+              <span className="text-sm sm:text-base font-extrabold font-montserrat text-white tracking-tight uppercase truncate min-w-0 flex-1 mr-2">
                 {t('settings.unlinkModal.title')}
               </span>
               <button
                 onClick={() => setShowUnlinkModal(false)}
-                className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg bg-[#34495E] border-2 border-black flex items-center justify-center text-white hover:bg-black hover:text-[#38C9E6] transition-colors cursor-pointer"
+                className="w-10 h-10 rounded-lg bg-[#34495E] border-2 border-black flex items-center justify-center text-white hover:bg-black hover:text-[#38C9E6] transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>

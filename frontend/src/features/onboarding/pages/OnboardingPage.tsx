@@ -128,14 +128,14 @@ export default function OnboardingPage() {
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#38C9E6]/5 rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#43E8A0]/5 rounded-full pointer-events-none" />
 
-      <Card hover={false} className="w-full max-w-lg p-4 sm:p-6 lg:p-8 border-2 border-black bg-[#2A3442] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative z-10 animate-fade-in rounded-3xl">
+      <Card hover={false} className="w-full max-w-lg p-4 sm:p-6 lg:p-8 border-2 border-black bg-[#2A3442] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative z-10 animate-fade-in rounded-3xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 sm:mb-8 border-b-2 border-black pb-3 sm:pb-4">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#38C9E6] flex-shrink-0" />
-            <h1 className="text-base sm:text-lg font-black text-white font-montserrat uppercase tracking-tight">{t('onboarding.title')}</h1>
+        <div className="flex items-center justify-between mb-4 sm:mb-8 border-b-2 border-black pb-3 sm:pb-4 gap-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Sparkles className="h-5 w-5 text-[#38C9E6] shrink-0" />
+            <h1 className="text-sm sm:text-lg font-black text-white font-montserrat uppercase tracking-tight truncate">{t('onboarding.title')}</h1>
           </div>
-          <span className="text-[10px] sm:text-xs uppercase tracking-wider font-extrabold text-[#B0BEC5] font-montserrat flex-shrink-0">
+          <span className="text-[10px] sm:text-xs uppercase tracking-wider font-extrabold text-[#B0BEC5] font-montserrat shrink-0">
             {t('onboarding.step')} {step} / 2
           </span>
         </div>

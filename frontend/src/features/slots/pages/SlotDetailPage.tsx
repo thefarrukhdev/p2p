@@ -232,16 +232,16 @@ export default function SlotDetailPage() {
         {/* Left Side: Main Details panel */}
         <div className="lg:col-span-2 flex flex-col gap-4 sm:gap-6">
           <Card hover={false} className="p-4 sm:p-6 flex flex-col gap-4 sm:gap-5 bg-[#2A3442] border-2 border-black rounded-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative z-10">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0 border-b-2 border-black pb-4">
-              <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4 border-b-2 border-black pb-4">
+              <div className="flex flex-col gap-1.5 min-w-0 flex-1">
                 <span className="text-[10px] text-[#38C9E6] font-black tracking-widest uppercase font-montserrat">
                   DARS MATNI & DETALLARI
                 </span>
-                <h2 className="text-lg sm:text-xl font-black text-white font-montserrat tracking-tight leading-none truncate max-w-[280px] sm:max-w-none">
+                <h2 className="text-lg sm:text-xl font-black text-white font-montserrat tracking-tight leading-none truncate w-full">
                   {slot.reviewer_project}
                 </h2>
               </div>
-              <div className="self-start">{getStatusBadge()}</div>
+              <div className="self-start shrink-0">{getStatusBadge()}</div>
             </div>
 
             {/* Core Specs Grid */}
@@ -286,7 +286,7 @@ export default function SlotDetailPage() {
                   <div className="flex flex-col min-w-0">
                     <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'qituvchi</span>
                     <span className="text-xs font-bold truncate">
-                      {slot.reviewer.school21_login} {slot.reviewer.telegram_username ? `(@${slot.reviewer.telegram_username})` : ''}
+                      {slot.reviewer.login || slot.reviewer.school21_login} {slot.reviewer.telegram_username ? `(@${slot.reviewer.telegram_username})` : ''}
                     </span>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ export default function SlotDetailPage() {
                   <div className="flex flex-col min-w-0">
                     <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'quvchi</span>
                     <span className="text-xs font-bold truncate">
-                      {slot.reviewee.school21_login} {slot.reviewee.telegram_username ? `(@${slot.reviewee.telegram_username})` : ''}
+                      {slot.reviewee.login || slot.reviewee.school21_login} {slot.reviewee.telegram_username ? `(@${slot.reviewee.telegram_username})` : ''}
                     </span>
                   </div>
                 </div>
@@ -308,8 +308,8 @@ export default function SlotDetailPage() {
             {/* Extra student project detail */}
             {slot.reviewee_project && (
               <div className="p-3 sm:p-4 bg-[#34495E] rounded-2xl border-2 border-black text-xs text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                <span className="font-extrabold text-[#B0BEC5] font-montserrat uppercase tracking-wider">Tekshirilayotgan loyiha:</span>
-                <strong className="text-[#43E8A0] uppercase font-montserrat font-black truncate">{slot.reviewee_project}</strong>
+                <span className="font-extrabold text-[#B0BEC5] font-montserrat uppercase tracking-wider shrink-0">Tekshirilayotgan loyiha:</span>
+                <strong className="text-[#43E8A0] uppercase font-montserrat font-black truncate min-w-0">{slot.reviewee_project}</strong>
               </div>
             )}
 

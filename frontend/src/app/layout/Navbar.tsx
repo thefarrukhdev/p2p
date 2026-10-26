@@ -109,11 +109,11 @@ export function Navbar(_props: NavbarProps) {
             <button
               onClick={() => setIsDropdownOpen((v) => !v)}
               className="h-10 pl-1.5 pr-2.5 bg-[#34495E] rounded-xl flex items-center gap-1.5 text-[#B0BEC5] hover:text-white transition-all cursor-pointer border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] select-none"
-              title={`@${user.school21_login}`}
+              title={`@${user.login || user.school21_login}`}
             >
               <div className="h-7 w-7 rounded-lg bg-[#1E2A38] overflow-hidden flex items-center justify-center border-2 border-black">
                 {user.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.school21_login} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+                  <img src={user.avatar_url} alt={user.login || user.school21_login} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
                 ) : (
                   <User className="h-4 w-4 text-[#B0BEC5]" />
                 )}

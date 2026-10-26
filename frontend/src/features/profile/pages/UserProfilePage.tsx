@@ -82,18 +82,18 @@ export default function UserProfilePage() {
       <div>
         <Link
           to="/leaderboard"
-          className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-[#B0BEC5] hover:text-white transition-colors font-montserrat"
+          className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-[#B0BEC5] hover:text-white transition-colors font-montserrat min-h-[44px] py-2"
         >
           <ChevronLeft className="h-4 w-4" /> {t('profile.public.back_to_leaderboard', 'Reytingga qaytish')}
         </Link>
       </div>
 
       {/* Header Info Block */}
-      <Card hover={false} className="p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5 relative overflow-hidden bg-[#2A3442] border-2 border-black rounded-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <Card hover={false} className="p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 relative overflow-hidden bg-[#2A3442] border-2 border-black rounded-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
         <Avatar src={userPublic.avatar_url} name={userPublic.telegram_username} size="xl" />
-        <div className="flex flex-col items-center sm:items-start gap-1">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-black text-white font-montserrat tracking-tight">
+        <div className="flex flex-col items-center sm:items-start gap-1 min-w-0 flex-1">
+          <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
+            <h2 className="text-base sm:text-lg font-black text-white font-montserrat tracking-tight">
               {userPublic.first_name || 'Ism'} {userPublic.last_name || 'Familiya'}
             </h2>
             <Badge type="secondary">{`LEVEL ${userPublic.level}`}</Badge>
@@ -101,11 +101,11 @@ export default function UserProfilePage() {
           <span className="text-xs text-[#38C9E6] font-bold">
             @{userPublic.telegram_username || 'telegram_yo‘q'}
           </span>
-          <span className="text-[10px] text-[#B0BEC5] uppercase tracking-wider font-extrabold mt-1">
+          <span className="text-[10px] text-[#B0BEC5] uppercase tracking-wider font-extrabold mt-1 text-center sm:text-left break-words">
             Program: {userPublic.core_program || 'CORE'} • Track: {userPublic.main_track || 'Web'} • Campus: {userPublic.campus || 'Mavjud emas'}
           </span>
           {userPublic.coalition_name && (
-            <span className="text-[10px] text-[#cdbdff] font-bold uppercase mt-1">
+            <span className="text-[10px] text-[#cdbdff] font-bold uppercase mt-1 text-center sm:text-left">
               Koalitsiya: {userPublic.coalition_name}
             </span>
           )}

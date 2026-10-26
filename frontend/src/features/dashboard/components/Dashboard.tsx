@@ -141,7 +141,7 @@ export function Dashboard() {
                 {currentUser?.avatar_url ? (
                   <img
                     src={currentUser.avatar_url}
-                    alt={currentUser.school21_login}
+                    alt={currentUser.login || currentUser.school21_login}
                     className="h-full w-full object-cover"
                     referrerPolicy="no-referrer"
                   />
@@ -156,7 +156,7 @@ export function Dashboard() {
 
             <div className="min-w-0">
               <h2 className="text-lg sm:text-xl font-black text-white font-montserrat tracking-tight leading-none truncate">
-                {currentUser?.first_name || currentUser?.school21_login || t('dashboard.profile.student')}
+                {currentUser?.first_name || currentUser?.login || currentUser?.school21_login || t('dashboard.profile.student')}
               </h2>
               <p className="text-xs text-[#B0BEC5] flex items-center gap-1.5 mt-1.5 leading-none flex-wrap">
                 <span className="truncate">{currentUser?.core_program || t('dashboard.profile.coreProgram')}</span>
@@ -214,7 +214,7 @@ export function Dashboard() {
             </h2>
             <Link
               to="/slots"
-              className="text-[10px] font-black text-[#38C9E6] hover:text-[#43E8A0] transition-colors uppercase font-montserrat"
+              className="min-h-[44px] inline-flex items-center py-2 px-1 text-[10px] font-black text-[#38C9E6] hover:text-[#43E8A0] transition-colors uppercase font-montserrat"
             >
               {t('dashboard.schedule.viewAll')}
             </Link>
@@ -264,7 +264,7 @@ export function Dashboard() {
 
                     <div className="flex items-center gap-2 sm:gap-3 text-[10px] text-[#B0BEC5] font-bold border-t-2 border-black/10 pt-2 mt-1 flex-wrap">
                       <Clock className="h-3.5 w-3.5 text-[#38C9E6] flex-shrink-0" />
-                      <span className="truncate">{formatDateTime(slot.start_time)}</span>
+                      <span className="truncate min-w-0">{formatDateTime(slot.start_time)}</span>
                       <span>·</span>
                       <span className="uppercase text-white">{slot.campus}</span>
                     </div>
@@ -336,7 +336,7 @@ export function Dashboard() {
           </div>
           <Link
             to="/slots"
-            className="text-[10px] font-black text-[#38C9E6] hover:text-[#43E8A0] transition-colors uppercase font-montserrat"
+            className="min-h-[44px] inline-flex items-center py-2 px-1 text-[10px] font-black text-[#38C9E6] hover:text-[#43E8A0] transition-colors uppercase font-montserrat"
           >
             {t('dashboard.available.viewAll')}
           </Link>

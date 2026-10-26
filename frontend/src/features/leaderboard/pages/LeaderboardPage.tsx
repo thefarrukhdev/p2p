@@ -133,11 +133,11 @@ export default function LeaderboardPage() {
       ) : (
         <div className="flex flex-col gap-4 sm:gap-5">
           {/* Top Rank spotlights */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-2">
             {rankedList.slice(0, 3).map((item) => (
               <Card
                 key={item.user_id}
-                className={`p-4 sm:p-6 flex flex-col items-center text-center relative overflow-hidden
+                className={`p-3.5 sm:p-4 lg:p-6 flex flex-col items-center text-center relative overflow-hidden
                   ${item.rank === 1 ? 'bg-gradient-to-br from-[#ffd740]/25 to-[#ffd740]/5' : ''}
                 `}
               >
@@ -158,8 +158,8 @@ export default function LeaderboardPage() {
                   {t('leaderboard.rankSpotlight')}
                 </span>
 
-                <div className="mt-3 sm:mt-4 px-3 sm:px-4 py-2 rounded-xl bg-[#34495E] border-2 border-black w-full text-center shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
-                  <span className="text-xs font-black text-[#43E8A0] font-ibm-plex-mono">
+                <div className="mt-3 sm:mt-4 px-2.5 sm:px-4 py-2 rounded-xl bg-[#34495E] border-2 border-black w-full text-center shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                  <span className="text-xs font-black text-[#43E8A0] font-ibm-plex-mono truncate block">
                     {item.value} {suffix}
                   </span>
                 </div>

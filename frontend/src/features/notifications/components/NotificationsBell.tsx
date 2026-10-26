@@ -58,7 +58,7 @@ export function NotificationsBell({ className = 'text-[#8095AF] hover:text-white
       {/* Trigger */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`relative transition-all cursor-pointer p-1 flex items-center justify-center ${className}`}
+        className={`relative transition-all cursor-pointer min-h-[36px] min-w-[36px] p-1 flex items-center justify-center rounded-lg ${className}`}
         title="Bildirishnomalar"
         aria-label="Bildirishnomalar"
       >
@@ -70,7 +70,7 @@ export function NotificationsBell({ className = 'text-[#8095AF] hover:text-white
 
       {/* Dropdown panel */}
       {open && (
-        <div className="absolute right-0 mt-3 w-80 sm:w-96 max-h-[70vh] overflow-hidden flex flex-col bg-[#2A3442] border-2 border-black rounded-3xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 animate-zoom-in font-ibm-plex-mono">
+        <div className="fixed inset-x-3 top-20 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:w-96 sm:mt-3 max-h-[70vh] overflow-hidden flex flex-col bg-[#2A3442] border-2 border-black rounded-3xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-50 animate-zoom-in font-ibm-plex-mono">
           {/* Header */}
           <div className="flex items-center justify-between gap-2 px-4 py-3 border-b-2 border-black">
             <h3 className="text-sm font-black text-white flex items-center gap-2 font-montserrat uppercase tracking-wider">

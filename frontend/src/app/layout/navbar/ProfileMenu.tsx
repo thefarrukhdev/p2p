@@ -19,8 +19,9 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
 
   const isProfilePage = location.pathname.startsWith('/profile');
 
-  const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.school21_login;
-  const username = `@${user.school21_login}`;
+  const userLogin = user.login || user.school21_login;
+  const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || userLogin;
+  const username = `@${userLogin}`;
 
   const handleMouseEnter = () => {
     if (hideTimeout) {
@@ -80,7 +81,7 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
               referrerPolicy="no-referrer"
             />
           ) : (
-            <Avatar name={user.school21_login} size="sm" className="w-full h-full" />
+            <Avatar name={userLogin} size="sm" className="w-full h-full" />
           )}
         </button>
       </div>
