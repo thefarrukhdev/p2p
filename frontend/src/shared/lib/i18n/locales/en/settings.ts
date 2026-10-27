@@ -38,15 +38,19 @@ export default {
   },
   "security": {
     "title": "Account Security",
-    "desc": "Manage your password and authentication providers."
+    "desc": "Manage your password and authentication providers.",
+    "unlinkBtn": "Unlink Telegram"
   },
   "logout": {
     "title": "Session Sign Out",
-    "desc": "Sign out of your P2P account on this device."
+    "desc": "Sign out of your P2P account on this device.",
+    "btn": "Log Out"
   },
   "logoutModal": {
     "title": "Confirm Logout",
-    "desc": "Are you sure you want to sign out of your account?"
+    "desc": "Are you sure you want to sign out of your account?",
+    "cancelBtn": "Stay",
+    "confirmBtn": "Sign Out"
   },
   "unlinkModal": {
     "title": "Unlink Telegram Account",

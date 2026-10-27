@@ -1,10 +1,15 @@
 export default {
-  "home": "Главная",
-  "slots": "Слоты",
-  "leaderboard": "Рейтинг",
-  "profile": "Профиль",
-  "settings": "Настройки",
-  "logout": "Выйти",
-  "login": "Войти",
-  "admin": "Админ-панель"
+  home: "Главная",
+  slots: "Слоты",
+  leaderboard: "Рейтинг",
+  profile: "Профиль",
+  myProfile: "Мой профиль",
+  settings: "Настройки",
+  logout: "Выйти из системы",
+  login: "Войти",
+  admin: "Админ-панель",
+  welcome: "Добро пожаловать",
+  stay: "Остаться",
+  logoutConfirmTitle: "Выход из системы",
+  logoutConfirmDesc: "Вы действительно хотите выйти? Для последующего входа потребуется повторная авторизация.",
 };

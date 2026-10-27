@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { slotsService } from '@/features/slots/api';
 import { useAuth } from '@/features/auth/hooks';
 import { formatDateTime } from '@/shared/lib/utils';
@@ -34,6 +35,7 @@ const getMinutesPassed = (startTimeStr?: string | null) => {
 };
 
 export default function SlotDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -137,9 +139,9 @@ export default function SlotDetailPage() {
   if (isError || !slot) {
     return (
       <div className="py-12 text-center font-ibm-plex-mono text-white">
-        <p className="text-[#FF9B9B] font-extrabold">Tafsilotlarni yuklashda xatolik yuz berdi.</p>
+        <p className="text-[#FF9B9B] font-extrabold">{t('slotDetail.loadError')}</p>
         <Link to="/slots" className="text-xs uppercase tracking-wider text-[#38C9E6] underline font-montserrat">
-          Slotlar ro'yxatiga qaytish
+          {t('slotDetail.backToList')}
         </Link>
       </div>
     );
@@ -151,17 +153,17 @@ export default function SlotDetailPage() {
   const getStatusBadge = () => {
     switch (slot.status) {
       case 'open':
-        return <Badge type="success">Ochiq</Badge>;
+        return <Badge type="success">{t('slots.statusOpen')}</Badge>;
       case 'booked':
-        return <Badge type="info">Band qilingan</Badge>;
+        return <Badge type="info">{t('slots.statusBooked')}</Badge>;
       case 'in_progress':
-        return <Badge type="warning">Jarayonda</Badge>;
+        return <Badge type="warning">{t('slots.statusInProgress')}</Badge>;
       case 'completed':
-        return <Badge type="primary">Tugallandi</Badge>;
+        return <Badge type="primary">{t('slots.statusCompleted')}</Badge>;
       case 'cancelled':
-        return <Badge type="error">Bekor qilingan</Badge>;
+        return <Badge type="error">{t('slots.statusCancelled')}</Badge>;
       case 'absent':
-        return <Badge type="error">Kelmadi</Badge>;
+        return <Badge type="error">{t('slots.statusAbsent')}</Badge>;
       default:
         return <Badge type="info">{slot.status}</Badge>;
     }
@@ -174,7 +176,6 @@ export default function SlotDetailPage() {
   const isTimeValidToStart = new Date().getTime() >= new Date(slot.start_time).getTime() - 15 * 60 * 1000;
   
   const hasStarted = isReviewer ? slot.reviewer_started : slot.reviewee_started;
-  const partnerStarted = isReviewer ? slot.reviewee_started : slot.reviewer_started;
   
   const canStart = slot.status === 'booked' && (isReviewer || isReviewee) && isTimeValidToStart && !hasStarted;
   const canFinish = slot.status === 'in_progress' && (isReviewer || isReviewee);
@@ -230,7 +231,7 @@ export default function SlotDetailPage() {
           to="/slots"
           className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-[#B0BEC5] hover:text-white transition-colors font-montserrat min-h-[44px]"
         >
-          <ChevronLeft className="h-4 w-4 text-[#38C9E6]" /> Slotlar ro'yxati
+          <ChevronLeft className="h-4 w-4 text-[#38C9E6]" /> {t('slotDetail.backToList')}
         </Link>
       </div>
 
@@ -241,7 +242,7 @@ export default function SlotDetailPage() {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4 border-b-2 border-black pb-4">
               <div className="flex flex-col gap-1.5 min-w-0 flex-1">
                 <span className="text-[10px] text-[#38C9E6] font-black tracking-widest uppercase font-montserrat">
-                  DARS MATNI & DETALLARI
+                  {t('slotDetail.detailsBadge')}
                 </span>
                 <h2 className="text-lg sm:text-xl font-black text-white font-montserrat tracking-tight leading-none truncate w-full">
                   {slot.reviewer_project}
@@ -255,7 +256,7 @@ export default function SlotDetailPage() {
               <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <Calendar className="h-5 w-5 text-[#38C9E6] flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">Haqiqiy Vaqt</span>
+                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">{t('slotDetail.realTime')}</span>
                   <span className="text-xs font-bold truncate">{formatDateTime(slot.start_time)}</span>
                 </div>
               </div>
@@ -263,15 +264,15 @@ export default function SlotDetailPage() {
               <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <Laptop className="h-5 w-5 text-[#cdbdff] flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">Formati</span>
-                  <span className="text-xs font-bold truncate">{slot.is_online ? 'Onlayn (Masofaviy)' : 'Oflayn (Campus)'}</span>
+                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">{t('slotDetail.format')}</span>
+                  <span className="text-xs font-bold truncate">{slot.is_online ? t('slotDetail.online') : t('slotDetail.offline')}</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <MapPin className="h-5 w-5 text-[#ffd740] flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">Kampus joylashuvi</span>
+                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">{t('slotDetail.campusLocation')}</span>
                   <span className="text-xs font-bold uppercase">{slot.campus}</span>
                 </div>
               </div>
@@ -279,9 +280,9 @@ export default function SlotDetailPage() {
               <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 <User className="h-5 w-5 text-[#38C9E6] flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">Roli</span>
+                  <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">{t('slotDetail.role')}</span>
                   <span className="text-xs font-bold">
-                    {isReviewer ? "O'qituvchi (Siz)" : isReviewee ? "O'quvchi (Siz)" : 'Talaba'}
+                    {isReviewer ? t('slotDetail.reviewerYou') : isReviewee ? t('slotDetail.revieweeYou') : t('slotDetail.student')}
                   </span>
                 </div>
               </div>
@@ -290,7 +291,7 @@ export default function SlotDetailPage() {
                 <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <User className="h-5 w-5 text-[#38C9E6] flex-shrink-0" />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'qituvchi</span>
+                    <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">{t('slotDetail.reviewer')}</span>
                     <span className="text-xs font-bold truncate">
                       {slot.reviewer.login || slot.reviewer.school21_login} {slot.reviewer.telegram_username ? `(@${slot.reviewer.telegram_username})` : ''}
                     </span>
@@ -302,7 +303,7 @@ export default function SlotDetailPage() {
                 <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#34495E] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <User className="h-5 w-5 text-[#43E8A0] flex-shrink-0" />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">O'quvchi</span>
+                    <span className="text-[10px] text-[#B0BEC5] font-extrabold uppercase font-montserrat">{t('slotDetail.reviewee')}</span>
                     <span className="text-xs font-bold truncate">
                       {slot.reviewee.login || slot.reviewee.school21_login} {slot.reviewee.telegram_username ? `(@${slot.reviewee.telegram_username})` : ''}
                     </span>
@@ -314,7 +315,7 @@ export default function SlotDetailPage() {
             {/* Extra student project detail */}
             {slot.reviewee_project && (
               <div className="p-3 sm:p-4 bg-[#34495E] rounded-2xl border-2 border-black text-xs text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                <span className="font-extrabold text-[#B0BEC5] font-montserrat uppercase tracking-wider shrink-0">Tekshirilayotgan loyiha:</span>
+                <span className="font-extrabold text-[#B0BEC5] font-montserrat uppercase tracking-wider shrink-0">{t('slotDetail.evaluatedProject')}</span>
                 <strong className="text-[#43E8A0] uppercase font-montserrat font-black truncate min-w-0">{slot.reviewee_project}</strong>
               </div>
             )}
@@ -324,10 +325,9 @@ export default function SlotDetailPage() {
               <div className="p-3 sm:p-4 rounded-2xl bg-[#4A3D2D] border-2 border-black text-xs text-white leading-relaxed flex items-start gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] mt-2">
                 <Clock className="h-5 w-5 text-[#ffd740] flex-shrink-0 mt-0.5 animate-pulse" />
                 <div className="flex flex-col gap-0.5">
-                  <span className="font-black uppercase tracking-widest text-[10px] text-[#ffd740] font-montserrat">Ma'lumot muddatlari</span>
+                  <span className="font-black uppercase tracking-widest text-[10px] text-[#ffd740] font-montserrat">{t('slotDetail.timeLockNotice')}</span>
                   <span className="font-medium leading-relaxed">
-                    Dars boshlanganidan buyon {minutesPassed} daqiqa o'tdi. Darsni yakunlash uchun kamida 15 daqiqa
-                    o'tishi shart ({15 - Math.min(15, minutesPassed)} daqiqa kutilmoqda).
+                    {t('slotDetail.timeLockDesc', { minutes: minutesPassed, remaining: 15 - Math.min(15, minutesPassed) })}
                   </span>
                 </div>
               </div>
@@ -338,28 +338,28 @@ export default function SlotDetailPage() {
               {/* Trigger evaluation cancel (Only reviewer) */}
               {canCancel && (
                 <Button variant="danger" onClick={handleCancel} disabled={isCancellingSlot} className="w-full sm:w-auto font-montserrat uppercase font-extrabold tracking-wider text-xs">
-                  Slotni bekor qilish
+                  {t('slotDetail.cancelSlot')}
                 </Button>
               )}
 
               {/* Trigger Absence complaint */}
               {(slot.status === 'booked' || slot.status === 'in_progress') && (isReviewer || isReviewee) && (
                 <Button variant="ghost" onClick={handleAbsent} disabled={isAbsentingSlot} className="w-full sm:w-auto text-[#FF9B9B] hover:bg-[#FF9B9B]/5 border-2 border-transparent hover:border-black font-montserrat uppercase font-extrabold tracking-wider text-xs">
-                  Sherik kelmadi
+                  {t('slotDetail.partnerAbsent')}
                 </Button>
               )}
 
               {/* Trigger start slot */}
               {canStart && (
                 <Button variant="primary" onClick={handleStart} disabled={isStartingSlot} className="w-full sm:w-auto font-montserrat uppercase font-extrabold tracking-wider text-xs text-black">
-                  <Play className="h-4 w-4 fill-current" /> Darsni boshlash
+                  <Play className="h-4 w-4 fill-current" /> {t('slotDetail.startSession')}
                 </Button>
               )}
 
               {/* Waiting for partner */}
               {slot.status === 'booked' && hasStarted && (
                 <Button variant="primary" disabled className="w-full sm:w-auto font-montserrat uppercase font-extrabold tracking-wider text-xs text-black opacity-70">
-                  <Clock className="h-4 w-4 fill-current mr-2 animate-pulse" /> Sherik kutilmoqda...
+                  <Clock className="h-4 w-4 fill-current mr-2 animate-pulse" /> {t('slotDetail.waitingPartner')}
                 </Button>
               )}
 
@@ -369,10 +369,10 @@ export default function SlotDetailPage() {
                   variant="primary"
                   onClick={handleFinish}
                   disabled={isFinishingSlot || !readyToFinish}
-                  title={!readyToFinish ? "Darsni yakunlash uchun 15 daqiqa o'tishi shart" : ''}
+                  title={!readyToFinish ? t('slotDetail.timeLockNotice') : ''}
                   className="w-full sm:w-auto font-montserrat uppercase font-extrabold tracking-wider text-xs text-black"
                 >
-                  <CheckCircle className="h-4 w-4" /> Darsni yakunlash
+                  <CheckCircle className="h-4 w-4" /> {t('slotDetail.finishSession')}
                 </Button>
               )}
 
@@ -382,7 +382,7 @@ export default function SlotDetailPage() {
                   onClick={() => setShowReviewModal(true)}
                   className="w-full sm:w-auto font-montserrat uppercase font-extrabold tracking-wider text-xs text-black"
                 >
-                  Fikr-Mulohaza qoldirish
+                  {t('slotDetail.leaveReview')}
                 </Button>
               )}
             </div>
@@ -403,19 +403,21 @@ export default function SlotDetailPage() {
         <Modal
           isOpen={showCancelModal}
           onClose={() => setShowCancelModal(false)}
-          title="Slotni Bekor Qilish"
+          title={t('slotDetail.cancelModal.title')}
         >
           <div className="flex flex-col gap-4">
             <p className="text-xs sm:text-sm text-[#B0BEC5] leading-relaxed">
-              Ushbu slotni bekor qilmoqchimisiz? Sababini quyida ko'rsatishingiz mumkin (ixtiyoriy):
+              {t('slotDetail.cancelModal.desc')}
             </p>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] uppercase font-bold text-[#B0BEC5] tracking-wider font-montserrat">SABAB (IXTIYORIY)</label>
+              <label className="text-[10px] uppercase font-bold text-[#B0BEC5] tracking-wider font-montserrat">
+                {t('slotDetail.cancelModal.reasonLabel')}
+              </label>
               <input
                 type="text"
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Masalan: Shoshilinch ishim chiqib qoldi..."
+                placeholder={t('slotDetail.cancelModal.reasonPlaceholder')}
                 className="w-full h-11 min-h-[44px] px-4 py-2 border-2 border-black rounded-xl bg-[#34495E] text-white font-ibm-plex-mono focus:outline-none focus:ring-2 focus:ring-[#38C9E6] transition-all text-xs"
               />
             </div>
@@ -425,14 +427,14 @@ export default function SlotDetailPage() {
                 onClick={() => setShowCancelModal(false)}
                 className="w-full sm:w-auto px-4 py-2 min-h-[44px] bg-[#34495E] hover:bg-gray-600 text-white font-extrabold rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] transition-all text-xs tracking-wider uppercase cursor-pointer"
               >
-                Orqaga
+                {t('common.back')}
               </button>
               <button
                 type="button"
                 onClick={handleConfirmCancel}
                 className="w-full sm:w-auto px-4 py-2 min-h-[44px] bg-[#ff5252] text-white hover:bg-red-600 font-extrabold rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] transition-all text-xs tracking-wider uppercase cursor-pointer"
               >
-                Tasdiqlash
+                {t('slotDetail.cancelModal.confirmBtn')}
               </button>
             </div>
           </div>
@@ -443,11 +445,11 @@ export default function SlotDetailPage() {
         <Modal
           isOpen={showAbsentModal}
           onClose={() => setShowAbsentModal(false)}
-          title="Sherik Kelmadi deb Belgilash"
+          title={t('slotDetail.absentModal.title')}
         >
           <div className="flex flex-col gap-4">
             <p className="text-xs sm:text-sm text-[#B0BEC5] leading-relaxed">
-              Sherigingiz kutilayotgan dars vaqtiga haqiqatdan ham kelmadimi? Buni kelmadi deb belgilamoqchimisiz? Ushbu amal ortga qaytarilmaydi.
+              {t('slotDetail.absentModal.desc')}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-2">
               <button
@@ -455,14 +457,14 @@ export default function SlotDetailPage() {
                 onClick={() => setShowAbsentModal(false)}
                 className="w-full sm:w-auto px-4 py-2 min-h-[44px] bg-[#34495E] hover:bg-gray-600 text-white font-extrabold rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] transition-all text-xs tracking-wider uppercase cursor-pointer"
               >
-                Yo'q, kuting
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAbsent}
                 className="w-full sm:w-auto px-4 py-2 min-h-[44px] bg-[#ff5252] text-white hover:bg-red-600 font-extrabold rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:-translate-x-[1px] hover:-translate-y-[1px] transition-all text-xs tracking-wider uppercase cursor-pointer"
               >
-                Ha, kelmadi
+                {t('slotDetail.absentModal.confirmBtn')}
               </button>
             </div>
           </div>

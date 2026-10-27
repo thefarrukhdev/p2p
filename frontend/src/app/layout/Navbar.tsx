@@ -1,8 +1,9 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth/hooks';
 import { NotificationsBell } from '@/features/notifications';
-import { Modal } from '@/shared/ui';
+import { Modal, LanguageSwitcher } from '@/shared/ui';
 import {
   LayoutDashboard,
   CalendarDays,
@@ -18,19 +19,20 @@ interface NavbarProps {
   unreadCount?: number;
 }
 
-const links = [
-  { to: '/dashboard', label: 'Asosiy', icon: LayoutDashboard },
-  { to: '/slots', label: 'Slotlar', icon: CalendarDays },
-  { to: '/leaderboard', label: 'Reyting', icon: Trophy },
-  { to: '/profile', label: 'Profil', icon: User },
-  { to: '/settings', label: 'Sozlamalar', icon: Settings },
-];
-
 export function Navbar(_props: NavbarProps) {
+  const { t } = useTranslation();
   const { logout, user } = useAuth();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const links = [
+    { to: '/dashboard', label: t('nav.home'), icon: LayoutDashboard },
+    { to: '/slots', label: t('nav.slots'), icon: CalendarDays },
+    { to: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy },
+    { to: '/profile', label: t('nav.profile'), icon: User },
+    { to: '/settings', label: t('nav.settings'), icon: Settings },
+  ];
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -55,7 +57,7 @@ export function Navbar(_props: NavbarProps) {
     <div className="hidden lg:block sticky top-6 z-30 mx-10 mt-6 font-ibm-plex-mono">
       <nav className="h-16 flex items-center justify-between rounded-2xl bg-[#2A3442] border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-6 relative z-30">
         {/* Logo / brand */}
-        <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0 select-none cursor-pointer" title="Asosiy">
+        <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0 select-none cursor-pointer" title={t('nav.home')}>
           <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#38C9E6] to-[#43E8A0] border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center">
             <Zap className="h-5 w-5 text-black" />
           </div>
@@ -99,6 +101,9 @@ export function Navbar(_props: NavbarProps) {
             <span className="text-xs font-black text-white font-ibm-plex-mono">{user.peer_points}</span>
           </div>
 
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
           {/* Notifications dropdown */}
           <div className="h-10 w-10 flex items-center justify-center bg-[#34495E] rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             <NotificationsBell className="text-[#B0BEC5] hover:text-white" />
@@ -128,14 +133,14 @@ export function Navbar(_props: NavbarProps) {
                   onClick={() => setIsDropdownOpen(false)}
                   className="flex items-center gap-2.5 px-4 py-2.5 text-[#B0BEC5] hover:text-white hover:bg-[#34495E] transition-all cursor-pointer"
                 >
-                  <User className="h-4 w-4" /> Mening profilim
+                  <User className="h-4 w-4" /> {t('nav.myProfile')}
                 </Link>
                 <Link
                   to="/settings"
                   onClick={() => setIsDropdownOpen(false)}
                   className="flex items-center gap-2.5 px-4 py-2.5 text-[#B0BEC5] hover:text-white hover:bg-[#34495E] transition-all cursor-pointer"
                 >
-                  <Settings className="h-4 w-4" /> Sozlamalar
+                  <Settings className="h-4 w-4" /> {t('nav.settings')}
                 </Link>
                 <div className="border-t-2 border-black/40 my-1" />
                 <button
@@ -145,7 +150,7 @@ export function Navbar(_props: NavbarProps) {
                   }}
                   className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[#FF9B9B] hover:text-white hover:bg-[#FF9B9B]/20 transition-all cursor-pointer text-left"
                 >
-                  <LogOut className="h-4 w-4" /> Tizimdan chiqish
+                  <LogOut className="h-4 w-4" /> {t('nav.logout')}
                 </button>
               </div>
             )}
@@ -154,17 +159,17 @@ export function Navbar(_props: NavbarProps) {
       </nav>
 
       {/* Logout confirmation */}
-      <Modal isOpen={isLogoutModalOpen} onClose={() => setIsLogoutModalOpen(false)} title="Tizimdan Chiqish">
+      <Modal isOpen={isLogoutModalOpen} onClose={() => setIsLogoutModalOpen(false)} title={t('nav.logoutConfirmTitle')}>
         <div className="flex flex-col gap-4">
           <p className="text-xs sm:text-sm text-[#B0BEC5] leading-relaxed">
-            Haqiqatdan ham tizimdan chiqmoqchimisiz? Kelgusi kirishlar uchun qayta avtorizatsiyadan oʻtishingiz talab etiladi.
+            {t('nav.logoutConfirmDesc')}
           </p>
           <div className="flex gap-3 justify-end pt-2">
             <button
               onClick={() => setIsLogoutModalOpen(false)}
               className="px-4 h-10 bg-[#34495E] hover:bg-[#3f5870] text-white font-black rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all text-xs tracking-wider uppercase cursor-pointer font-montserrat"
             >
-              Qolish
+              {t('nav.stay')}
             </button>
             <button
               onClick={() => {
@@ -173,7 +178,7 @@ export function Navbar(_props: NavbarProps) {
               }}
               className="px-4 h-10 bg-[#FF9B9B] hover:bg-[#ff8888] text-black font-black rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all text-xs tracking-wider uppercase cursor-pointer font-montserrat"
             >
-              Chiqish
+              {t('nav.logout')}
             </button>
           </div>
         </div>

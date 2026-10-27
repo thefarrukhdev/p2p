@@ -1,6 +1,8 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/shared/ui';
+import i18n from '@/shared/lib/i18n';
 
 interface Props {
   children: ReactNode;
@@ -38,9 +40,9 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="h-16 w-16 rounded-full bg-[#34495E] border-2 border-black flex items-center justify-center text-[#FF9B9B]">
               <AlertTriangle className="h-8 w-8" />
             </div>
-            <h1 className="text-xl font-bold text-[#FFFFFF]">Tizim Xatosi</h1>
+            <h1 className="text-xl font-bold text-[#FFFFFF]">{i18n.t('common.systemError')}</h1>
             <p className="text-sm text-[#B0BEC5]">
-              Kutilmagan texnik nosozlik yuz berdi. Iltimos, sahifani yangilang yoki tizimga qayta kiring.
+              {i18n.t('common.systemErrorDesc')}
             </p>
             {this.state.error && import.meta.env.DEV && (
               <pre className="text-left w-full overflow-x-auto text-xs text-[#B0BEC5] bg-[#1E2A38] p-3 rounded border-2 border-black font-mono max-h-32">
@@ -53,14 +55,14 @@ export class ErrorBoundary extends Component<Props, State> {
                 onClick={() => window.location.reload()}
                 className="flex-1"
               >
-                <RefreshCw className="h-4 w-4" /> Sahifani yangilash
+                <RefreshCw className="h-4 w-4" /> {i18n.t('common.refreshPage')}
               </Button>
               <Button
                 variant="secondary"
                 onClick={this.handleReset}
                 className="flex-1"
               >
-                Asosiyga qaytish
+                {i18n.t('common.backToHome')}
               </Button>
             </div>
           </div>
@@ -73,6 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
 }
 
 export function RootRouteError() {
+  const { t } = useTranslation();
   const handleReload = () => window.location.reload();
   const handleHome = () => { window.location.href = '/dashboard'; };
 
@@ -84,22 +87,24 @@ export function RootRouteError() {
         </div>
         <div className="space-y-1">
           <h1 className="text-xl font-black font-montserrat uppercase tracking-tight text-white">
-            Kutilmagan xatolik yuz berdi
+            {t('common.systemError')}
           </h1>
           <p className="text-xs text-[#B0BEC5] leading-relaxed">
-            Ushbu sahifani yuklash jarayonida texnik muammo yuz berdi. Iltimos, sahifani yangilang yoki asosiy panelga qayting.
+            {t('common.systemErrorDesc')}
           </p>
         </div>
         <div className="flex gap-3 w-full pt-2">
           <Button variant="primary" onClick={handleReload} className="flex-1 justify-center gap-2">
-            <RefreshCw className="h-4 w-4" /> Yangilash
+            <RefreshCw className="h-4 w-4" /> {t('common.refreshPage')}
           </Button>
           <Button variant="secondary" onClick={handleHome} className="flex-1 justify-center">
-            Asosiyga
+            {t('common.backToHome')}
           </Button>
         </div>
       </div>
     </div>
   );
 }
+
 export default ErrorBoundary;
+

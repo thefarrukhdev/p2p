@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@/features/notifications/hooks';
-import { Card, Badge, Spinner, Button, EmptyState, Skeleton } from '@/shared/ui';
+import { Button, Skeleton } from '@/shared/ui';
 import { formatRelativeTime } from '@/shared/lib/utils';
 import { Bell, CheckSquare, Sparkles, BookOpen, AlertCircle } from 'lucide-react';
 
 export default function NotificationsPage() {
+  const { t } = useTranslation();
   const { notifications, isLoading, markAsRead, markAllAsRead, isMarkingAllAsRead } = useNotifications();
 
   const handleMarkOne = async (id: string, isRead: boolean) => {
@@ -31,10 +33,10 @@ export default function NotificationsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-2 border-black pb-4">
         <div className="flex flex-col gap-1.5">
           <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2 font-montserrat tracking-tight leading-tight">
-            <Bell className="h-6 w-6 text-[#38C9E6] shrink-0" /> Bildirishnomalar markazi
+            <Bell className="h-6 w-6 text-[#38C9E6] shrink-0" /> {t('notifications.centerTitle')}
           </h1>
           <p className="text-xs text-[#B0BEC5] leading-relaxed">
-            Slotlar darsi, boshlanishi yoki baholash fikrlari bo‘yicha real-vaqt yangiliklari.
+            {t('notifications.centerSubtitle')}
           </p>
         </div>
         {notifications.some((n) => !n.is_read) && (
@@ -44,7 +46,7 @@ export default function NotificationsPage() {
             disabled={isMarkingAllAsRead}
             className="w-full sm:w-auto text-xs uppercase font-extrabold tracking-wider font-montserrat"
           >
-            Barchasini o‘qilgan qilish
+            {t('notifications.markAllRead')}
           </Button>
         )}
       </div>
@@ -64,18 +66,17 @@ export default function NotificationsPage() {
           ))}
         </div>
       ) : notifications.length === 0 ? (
-        <EmptyState
-          title="Yangi bildirishnomalar yo'q"
-          description="Bildirishnomalar qutisi bo‘sh. Tizimdagi dars yangiliklari shu yerda kelib turadi."
-          icon={<Bell className="h-8 w-8 text-black" />}
-        />
+        <div className="py-12 flex flex-col items-center justify-center text-center gap-3 bg-[#2A3442] border-2 border-black rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <Bell className="h-10 w-10 text-[#B0BEC5]" />
+          <p className="text-sm font-bold text-[#B0BEC5]">{t('notifications.empty')}</p>
+        </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {notifications.map((notif) => (
             <div
               key={notif.id}
               onClick={() => handleMarkOne(notif.id, notif.is_read)}
-              className={`p-3 sm:p-4 rounded-2xl border-2 flex items-start justify-between gap-3 sm:gap-4 transition-all relative group cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+              className={`p-4 sm:p-5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
                 ${
                   !notif.is_read
                     ? 'bg-[#2A3442] border-black border-l-8 border-l-[#38C9E6]'
@@ -91,30 +92,20 @@ export default function NotificationsPage() {
                 <div className="flex flex-col gap-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-extrabold text-white leading-tight font-montserrat tracking-tight break-words">
-                      {notif.title || 'Platforma bildirishnomasi'}
+                      {notif.title || t('notifications.title')}
                     </span>
                     {!notif.is_read && (
                       <span className="h-2.5 w-2.5 rounded-full bg-[#FF9B9B] animate-pulse shrink-0" />
                     )}
                   </div>
                   <p className="text-xs text-[#B0BEC5] leading-relaxed max-w-2xl break-words">
-                    {notif.body || 'Yangi bildirishnoma mavjud.'}
+                    {notif.body}
                   </p>
                   <span className="text-[9px] text-[#B0BEC5] font-black uppercase tracking-wider mt-1.5 flex items-center gap-1.5 font-montserrat">
                     <AlertCircle className="h-3 w-3 text-[#38C9E6] shrink-0" /> {formatRelativeTime(notif.created_at)}
                   </span>
                 </div>
               </div>
-
-              {/* Mark read toggle action inside list row */}
-              {!notif.is_read && (
-                <button
-                  type="button"
-                  className="text-[10px] uppercase font-extrabold text-[#38C9E6] hover:text-[#43E8A0] whitespace-nowrap hidden sm:block font-montserrat tracking-wider cursor-pointer"
-                >
-                  O‘qildi deb kiritish
-                </button>
-              )}
             </div>
           ))}
         </div>
@@ -122,4 +113,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-

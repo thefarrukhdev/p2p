@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth/hooks';
 import { NotificationsBell } from '@/features/notifications';
 import { Coins, Zap } from 'lucide-react';
-import { Avatar } from '@/shared/ui';
+import { Avatar, LanguageSwitcher } from '@/shared/ui';
 
 interface HeaderProps {
   unreadCount?: number;
 }
 
 export function Header(_props: HeaderProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   if (!user) {
@@ -30,12 +32,12 @@ export function Header(_props: HeaderProps) {
         </div>
         <div className="flex flex-col min-w-0">
           <h2 className="text-xs sm:text-sm font-extrabold text-white font-montserrat tracking-tight leading-none truncate min-w-0">
-            <span className="hidden sm:inline">Xush kelibsiz, </span>
+            <span className="hidden sm:inline">{t('nav.welcome', 'Xush kelibsiz')}, </span>
             <span className="text-[#38C9E6]">@{user.login || user.school21_login}</span>
           </h2>
           <span className="text-[8px] sm:text-[10px] text-[#B0BEC5] uppercase tracking-wider font-ibm-plex-mono font-bold mt-1 truncate">
             <span className="inline sm:hidden">{user.campus ? user.campus.split(' ')[0] : 'CAMPUS'}</span>
-            <span className="hidden sm:inline">PROGRAM: {user.core_program || 'CORE'} • {user.campus ? user.campus.toUpperCase() : 'CAMPUS'}</span>
+            <span className="hidden sm:inline">{user.core_program || 'CORE'} • {user.campus ? user.campus.toUpperCase() : 'CAMPUS'}</span>
           </span>
         </div>
       </div>
@@ -60,6 +62,9 @@ export function Header(_props: HeaderProps) {
           </span>
         </div>
 
+        {/* Mobile Language Switcher */}
+        <LanguageSwitcher />
+
         {/* Notification Bell dropdown */}
         <div className="flex items-center justify-center rounded-xl bg-[#34495E] text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] shrink-0">
           <NotificationsBell className="text-[#B0BEC5] hover:text-white" />
@@ -69,7 +74,7 @@ export function Header(_props: HeaderProps) {
         <Link
           to="/profile"
           className="shrink-0 flex items-center justify-center rounded-full hover:scale-105 active:scale-95 transition-transform"
-          aria-label="Profil"
+          aria-label={t('nav.profile')}
         >
           <Avatar
             src={user.avatar_url}

@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   CalendarDays,
@@ -7,11 +8,13 @@ import {
 } from 'lucide-react';
 
 export function BottomNav() {
+  const { t } = useTranslation();
+
   const tabs = [
-    { to: '/dashboard', label: 'Asosiy', icon: LayoutDashboard },
-    { to: '/slots', label: 'Slotlar', icon: CalendarDays },
-    { to: '/leaderboard', label: 'Reyting', icon: Trophy },
-    { to: '/profile', label: 'Profil', icon: User },
+    { to: '/dashboard', label: t('nav.home'), icon: LayoutDashboard },
+    { to: '/slots', label: t('nav.slots'), icon: CalendarDays },
+    { to: '/leaderboard', label: t('nav.leaderboard'), icon: Trophy },
+    { to: '/profile', label: t('nav.profile'), icon: User },
   ];
 
   return (

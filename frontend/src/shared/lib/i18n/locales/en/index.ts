@@ -9,6 +9,7 @@ import leaderboard from './leaderboard';
 import profile from './profile';
 import settings from './settings';
 import common from './common';
+import notifications from './notifications';
 
 export const en = {
   nav,
@@ -22,4 +23,5 @@ export const en = {
   profile,
   settings,
   common,
+  notifications,
 };

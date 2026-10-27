@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useTranslation } from 'react-i18next';
 import { Project, SlotCreate } from '@/shared/types/api';
 import { Button, Input, Select } from '@/shared/ui';
 import { triggerToast } from '@/shared/stores/toast';
@@ -14,14 +15,6 @@ interface CreateSlotFormProps {
   initialStartTime?: string;
 }
 
-const slotSchema = z.object({
-  reviewer_project: z.string().min(1, 'Loyiha nomini tanlash majburiy'),
-  start_time: z.string().min(1, 'Boshlanish vaqtini tanlash majburiy'),
-  is_online: z.boolean(),
-});
-
-type FormValues = z.infer<typeof slotSchema>;
-
 export function CreateSlotForm({
   teachableProjects,
   userCampus,
@@ -29,7 +22,16 @@ export function CreateSlotForm({
   isSubmitting = false,
   initialStartTime,
 }: CreateSlotFormProps) {
+  const { t } = useTranslation();
   const isTashkent = userCampus?.toLowerCase() === 'tashkent';
+
+  const slotSchema = z.object({
+    reviewer_project: z.string().min(1, t('slots.form.errProjectRequired')),
+    start_time: z.string().min(1, t('slots.form.errTimeRequired')),
+    is_online: z.boolean(),
+  });
+
+  type FormValues = z.infer<typeof slotSchema>;
 
   const {
     register,
@@ -63,11 +65,11 @@ export function CreateSlotForm({
     try {
       const startDt = new Date(values.start_time);
       if (isNaN(startDt.getTime())) {
-        triggerToast("Boshlanish vaqti noto'g'ri kiritilgan", 'error');
+        triggerToast(t('slots.form.errInvalidTime'), 'error');
         return;
       }
       if (startDt.getTime() < Date.now()) {
-        triggerToast("Boshlanish vaqti o'tib ketgan bo'lishi mumkin emas", 'error');
+        triggerToast(t('slots.form.errPastTime'), 'error');
         return;
       }
       const endDt = new Date(startDt.getTime() + 60 * 60 * 1000);
@@ -88,11 +90,11 @@ export function CreateSlotForm({
       <fieldset disabled={isSubmitting} className="flex flex-col gap-4 sm:gap-5 disabled:opacity-60 transition-opacity">
         {/* Project selector */}
         <Select
-          label="Siz o'rgata oladigan loyiha"
+          label={t('slots.form.projectLabel')}
           error={errors.reviewer_project?.message}
           {...register('reviewer_project')}
         >
-          <option value="" disabled className="bg-[#1E2A38]">-- Tanlang --</option>
+          <option value="" disabled className="bg-[#1E2A38]">{t('slots.form.selectProject')}</option>
           {teachableProjects.map((proj) => (
             <option key={proj.id || proj.title} value={proj.title} className="bg-[#34495E]">
               {proj.title}
@@ -103,9 +105,9 @@ export function CreateSlotForm({
         {/* Start Date Selection */}
         <Input
           type="datetime-local"
-          label="Dars boshlanish vaqti"
+          label={t('slots.form.timeLabel')}
           error={errors.start_time?.message}
-          placeholder="Vaqtni tanlang"
+          placeholder={t('slots.form.timePlaceholder')}
           {...register('start_time')}
         />
 
@@ -119,20 +121,20 @@ export function CreateSlotForm({
               {...register('is_online')}
             />
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-[#FFFFFF]">Onlayn dars</span>
-              <span className="text-[10px] text-[#B0BEC5]">Masofaviy yoki telegram orqali P2P dars</span>
+              <span className="text-sm font-semibold text-[#FFFFFF]">{t('slots.form.onlineLabel')}</span>
+              <span className="text-[10px] text-[#B0BEC5]">{t('slots.form.onlineDesc')}</span>
             </div>
           </label>
           {isTashkent && (
             <span className="text-[10px] text-[#38C9E6] uppercase tracking-wider font-semibold font-mono mt-1">
-              * Tashkent campusi faqat onlayn rejimlarni qo'llab-quvvatlaydi.
+              {t('slots.form.tashkentOnlineNotice')}
             </span>
           )}
         </div>
 
         <div className="pt-2">
           <Button type="submit" variant="primary" className="w-full min-h-[44px]" disabled={isSubmitting}>
-            {isSubmitting ? 'Yaratilmoqda...' : 'Slotni tasdiqlash'}
+            {isSubmitting ? t('slots.form.submitting') : t('slots.form.submitBtn')}
           </Button>
         </div>
       </fieldset>

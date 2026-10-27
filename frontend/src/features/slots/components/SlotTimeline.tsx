@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { SlotStatus } from '@/shared/types/api';
 import { Check, AlertTriangle } from 'lucide-react';
 
@@ -8,11 +9,13 @@ interface SlotTimelineProps {
 }
 
 export function SlotTimeline({ status, actualStart, actualEnd }: SlotTimelineProps) {
+  const { t, i18n } = useTranslation();
+
   const steps = [
-    { key: 'created', label: 'Slot Yaratildi', desc: 'Siz sheriklar uchun vaqt darchasini ruxsat etdingiz.' },
-    { key: 'booked', label: 'Band Qilindi', desc: 'Dars baholovchi talaba tomonidan band qilindi.' },
-    { key: 'in_progress', label: 'Dars Boshlandi', desc: 'Ikkala tomon ham darsni "Boshlash" ni bosishdi.' },
-    { key: 'completed', label: 'Tugallandi', desc: 'Peer-to-peer baholash va loyiha muhokamasi yakunlandi.' },
+    { key: 'created', label: t('slotDetail.stepCreated'), desc: t('slotDetail.stepCreatedDesc') },
+    { key: 'booked', label: t('slotDetail.stepBooked'), desc: t('slotDetail.stepBookedDesc') },
+    { key: 'in_progress', label: t('slotDetail.stepStarted'), desc: t('slotDetail.stepStartedDesc') },
+    { key: 'completed', label: t('slotDetail.stepCompleted'), desc: t('slotDetail.stepCompletedDesc') },
   ];
 
   const getStepIndex = () => {
@@ -32,19 +35,20 @@ export function SlotTimeline({ status, actualStart, actualEnd }: SlotTimelinePro
   };
 
   const activeIndex = getStepIndex();
+  const dateLocale = i18n.language === 'ru' ? 'ru-RU' : i18n.language === 'en' ? 'en-US' : 'uz-UZ';
 
   return (
     <div className="flex flex-col gap-4 sm:gap-5 p-4 sm:p-5 bg-[#2A3442] border-2 border-black rounded-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-ibm-plex-mono">
       <h3 className="text-xs uppercase font-montserrat font-black tracking-widest text-[#B0BEC5] mb-1 sm:mb-2">
-        Baholash Bosqichlari Timeline
+        {t('slotDetail.timelineTitle')}
       </h3>
 
       {status === 'cancelled' && (
         <div className="p-3 sm:p-4 rounded-2xl bg-[#4A2D2D] border-2 border-black flex items-start gap-3 mb-2 animate-fade-in shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <AlertTriangle className="h-5 w-5 text-[#FF9B9B] flex-shrink-0 mt-0.5" />
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-black text-[#FF9B9B] font-montserrat">Loyiha Bekor Qilindi</span>
-            <span className="text-xs text-[#B0BEC5] leading-relaxed">Ushbu slot yaratuvchi tomonidan yoki administrator tomonidan bekor qilindi.</span>
+            <span className="text-sm font-black text-[#FF9B9B] font-montserrat">{t('slotDetail.cancelledTitle')}</span>
+            <span className="text-xs text-[#B0BEC5] leading-relaxed">{t('slotDetail.cancelledDesc')}</span>
           </div>
         </div>
       )}
@@ -53,8 +57,8 @@ export function SlotTimeline({ status, actualStart, actualEnd }: SlotTimelinePro
         <div className="p-3 sm:p-4 rounded-2xl bg-[#4A2D2D] border-2 border-black flex items-start gap-3 mb-2 animate-fade-in shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <AlertTriangle className="h-5 w-5 text-[#FF9B9B] flex-shrink-0 mt-0.5" />
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-black text-[#FF9B9B] font-montserrat">Dars Kelmadi deb Belgilandi</span>
-            <span className="text-xs text-[#B0BEC5] leading-relaxed">Baholash vaqtida kelmagan a'zo qayd etildi. Tegishli XP jarimalari yuklandi.</span>
+            <span className="text-sm font-black text-[#FF9B9B] font-montserrat">{t('slotDetail.absentTitle')}</span>
+            <span className="text-xs text-[#B0BEC5] leading-relaxed">{t('slotDetail.absentDesc')}</span>
           </div>
         </div>
       )}
@@ -84,12 +88,12 @@ export function SlotTimeline({ status, actualStart, actualEnd }: SlotTimelinePro
 
                 {step.key === 'in_progress' && actualStart && (
                   <span className="text-[10px] font-ibm-plex-mono text-[#38C9E6] mt-1">
-                    Boshlanish vaqti: {new Date(actualStart).toLocaleTimeString('uz-UZ')}
+                    {t('slotDetail.startTimeLabel')} {new Date(actualStart).toLocaleTimeString(dateLocale)}
                   </span>
                 )}
                 {step.key === 'completed' && actualEnd && (
                   <span className="text-[10px] font-ibm-plex-mono text-[#cdbdff] mt-1">
-                    Yakunlanish vaqti: {new Date(actualEnd).toLocaleTimeString('uz-UZ')}
+                    {t('slotDetail.endTimeLabel')} {new Date(actualEnd).toLocaleTimeString(dateLocale)}
                   </span>
                 )}
               </div>

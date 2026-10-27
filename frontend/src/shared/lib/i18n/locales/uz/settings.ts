@@ -38,15 +38,19 @@ export default {
   },
   "security": {
     "title": "Hisob Xavfsizligi",
-    "desc": "Parolingizni va autentifikatsiya provayderlarini boshqaring."
+    "desc": "Parolingizni va autentifikatsiya provayderlarini boshqaring.",
+    "unlinkBtn": "Telegram ulanishini uzish"
   },
   "logout": {
     "title": "Seansdan Chiqish",
-    "desc": "Ushbu qurilmadagi P2P hisobingizdan chiqib ketish."
+    "desc": "Ushbu qurilmadagi P2P hisobingizdan chiqib ketish.",
+    "btn": "Tizimdan chiqish"
   },
   "logoutModal": {
     "title": "Chiqishni Tasdiqlang",
-    "desc": "Hisobingizdan chiqib ketishga ishonchingiz komilmi?"
+    "desc": "Hisobingizdan chiqib ketishga ishonchingiz komilmi?",
+    "cancelBtn": "Qolish",
+    "confirmBtn": "Chiqish"
   },
   "unlinkModal": {
     "title": "Telegram Hisobni Uzish",

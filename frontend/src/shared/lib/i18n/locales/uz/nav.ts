@@ -1,10 +1,15 @@
 export default {
-  "home": "Bosh sahifa",
-  "slots": "Slotlar",
-  "leaderboard": "Reyting",
-  "profile": "Profil",
-  "settings": "Sozlamalar",
-  "logout": "Chiqish",
-  "login": "Kirish",
-  "admin": "Admin panel"
+  home: "Asosiy",
+  slots: "Slotlar",
+  leaderboard: "Reyting",
+  profile: "Profil",
+  myProfile: "Mening profilim",
+  settings: "Sozlamalar",
+  logout: "Tizimdan chiqish",
+  login: "Kirish",
+  admin: "Admin panel",
+  welcome: "Xush kelibsiz",
+  stay: "Qolish",
+  logoutConfirmTitle: "Tizimdan Chiqish",
+  logoutConfirmDesc: "Haqiqatdan ham tizimdan chiqmoqchimisiz? Kelgusi kirishlar uchun qayta avtorizatsiyadan oʻtishingiz talab etiladi.",
 };

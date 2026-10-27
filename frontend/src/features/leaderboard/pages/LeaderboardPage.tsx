@@ -45,8 +45,8 @@ export default function LeaderboardPage() {
 
   const tabs = [
     { key: 'xp' as TabType, label: t('leaderboard.tabs.xp'), icon: Zap },
-    { key: 'taught' as TabType, label: 'Ko\'p o\'rgatganlar', icon: GraduationCap },
-    { key: 'learned' as TabType, label: 'Ko\'p o\'rganganlar', icon: BookOpen },
+    { key: 'taught' as TabType, label: t('leaderboard.tabs.taught'), icon: GraduationCap },
+    { key: 'learned' as TabType, label: t('leaderboard.tabs.learned'), icon: BookOpen },
   ];
 
   return (

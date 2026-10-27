@@ -1,10 +1,15 @@
 export default {
-  "home": "Home",
-  "slots": "Slots",
-  "leaderboard": "Leaderboard",
-  "profile": "Profile",
-  "settings": "Settings",
-  "logout": "Logout",
-  "login": "Login",
-  "admin": "Admin Panel"
+  home: "Home",
+  slots: "Slots",
+  leaderboard: "Leaderboard",
+  profile: "Profile",
+  myProfile: "My Profile",
+  settings: "Settings",
+  logout: "Log Out",
+  login: "Log In",
+  admin: "Admin Panel",
+  welcome: "Welcome",
+  stay: "Stay",
+  logoutConfirmTitle: "Log Out",
+  logoutConfirmDesc: "Are you sure you want to log out? You will need to re-authenticate to sign in again.",
 };

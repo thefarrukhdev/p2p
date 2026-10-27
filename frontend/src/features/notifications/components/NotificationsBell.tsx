@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@/features/notifications/hooks';
 import { formatRelativeTime } from '@/shared/lib/utils';
 import { Bell, CheckSquare, Sparkles, BookOpen, AlertCircle, Check } from 'lucide-react';
@@ -27,6 +28,7 @@ function getNotificationIcon(type: string) {
  * Alohida /notifications sahifasi o'rniga (konsolidatsiya).
  */
 export function NotificationsBell({ className = 'text-[#8095AF] hover:text-white' }: NotificationsBellProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { notifications, isLoading, markAsRead, markAllAsRead, isMarkingAllAsRead } = useNotifications();
@@ -59,8 +61,8 @@ export function NotificationsBell({ className = 'text-[#8095AF] hover:text-white
       <button
         onClick={() => setOpen((v) => !v)}
         className={`relative transition-all cursor-pointer min-h-[36px] min-w-[36px] p-1 flex items-center justify-center rounded-lg ${className}`}
-        title="Bildirishnomalar"
-        aria-label="Bildirishnomalar"
+        title={t('notifications.title')}
+        aria-label={t('notifications.title')}
       >
         <Bell className="h-5 w-5 stroke-[2]" />
         {unreadCount > 0 && (
@@ -74,7 +76,7 @@ export function NotificationsBell({ className = 'text-[#8095AF] hover:text-white
           {/* Header */}
           <div className="flex items-center justify-between gap-2 px-4 py-3 border-b-2 border-black">
             <h3 className="text-sm font-black text-white flex items-center gap-2 font-montserrat uppercase tracking-wider">
-              <Bell className="h-4 w-4 text-[#38C9E6]" /> Bildirishnomalar
+              <Bell className="h-4 w-4 text-[#38C9E6]" /> {t('notifications.title')}
             </h3>
             {unreadCount > 0 && (
               <button
@@ -82,7 +84,7 @@ export function NotificationsBell({ className = 'text-[#8095AF] hover:text-white
                 disabled={isMarkingAllAsRead}
                 className="text-[10px] uppercase font-extrabold text-[#38C9E6] hover:text-[#43E8A0] tracking-wider font-montserrat cursor-pointer disabled:opacity-50"
               >
-                Barchasini o‘qish
+                {t('notifications.markAllRead')}
               </button>
             )}
           </div>
@@ -90,11 +92,11 @@ export function NotificationsBell({ className = 'text-[#8095AF] hover:text-white
           {/* List */}
           <div className="overflow-y-auto flex flex-col divide-y-2 divide-black/40">
             {isLoading ? (
-              <div className="p-6 text-center text-xs text-[#B0BEC5]">Yuklanmoqda...</div>
+              <div className="p-6 text-center text-xs text-[#B0BEC5]">{t('notifications.loading')}</div>
             ) : notifications.length === 0 ? (
               <div className="p-8 flex flex-col items-center gap-2 text-center">
                 <Bell className="h-8 w-8 text-[#B0BEC5]" />
-                <p className="text-xs text-[#B0BEC5]">Yangi bildirishnomalar yo‘q.</p>
+                <p className="text-xs text-[#B0BEC5]">{t('notifications.empty')}</p>
               </div>
             ) : (
               notifications.map((notif) => (

@@ -167,24 +167,24 @@ export default function SlotsPage() {
   });
 
   const filterOptions = [
-    { key: 'all', label: 'Barchasi' },
-    { key: 'open', label: 'Ochiq' },
-    { key: 'booked', label: 'Band' },
-    { key: 'in_progress', label: 'Jarayonda' },
-    { key: 'completed', label: 'Tugallandi' },
-    { key: 'cancelled', label: 'Bekor' },
+    { key: 'all', label: t('slots.filterAll') },
+    { key: 'open', label: t('slots.filterOpenShort') },
+    { key: 'booked', label: t('slots.filterBookedShort') },
+    { key: 'in_progress', label: t('slots.filterInProgressShort') },
+    { key: 'completed', label: t('slots.filterCompletedShort') },
+    { key: 'cancelled', label: t('slots.filterCancelledShort') },
   ];
 
   const mainTabs = [
-    { key: 'my-slots' as MainTab, label: 'Mening slotlarim', icon: CalendarClock },
-    { key: 'search' as MainTab, label: 'Qidiruv', icon: Search },
+    { key: 'my-slots' as MainTab, label: t('slots.mySlotsTab'), icon: CalendarClock },
+    { key: 'search' as MainTab, label: t('slots.searchTab'), icon: Search },
   ];
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 animate-fade-in font-ibm-plex-mono text-white">
       <PageHeader
-        title="Baholash Slotlari"
-        subtitle="Siz boshqaradigan o'qituvchi (reviewer) yoki o'quvchi (reviewee) dars jadvali."
+        title={t('slots.title')}
+        subtitle={t('slots.subtitle')}
         icon={CalendarClock}
         actions={
           mainTab === 'my-slots' ? (
@@ -193,7 +193,7 @@ export default function SlotsPage() {
               onClick={handleOpenNewSlot}
               className="w-full sm:w-auto text-xs uppercase tracking-wider font-extrabold"
             >
-              <Plus className="h-4 w-4" /> Yangi slot
+              <Plus className="h-4 w-4" /> {t('slots.createSlot')}
             </Button>
           ) : undefined
         }
@@ -242,7 +242,7 @@ export default function SlotsPage() {
                 `}
               >
                 <CalendarDays className="h-4 w-4" />
-                <span>Jadval</span>
+                <span>{t('slots.calendarView')}</span>
               </button>
               <button
                 onClick={() => setViewMode('list')}
@@ -255,7 +255,7 @@ export default function SlotsPage() {
                 `}
               >
                 <List className="h-4 w-4" />
-                <span>Ro'yxat</span>
+                <span>{t('slots.listView')}</span>
               </button>
             </div>
           </div>
@@ -269,7 +269,7 @@ export default function SlotsPage() {
                   <button
                     onClick={handlePrevWeek}
                     className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[#2A3442] hover:bg-gray-700 border-2 border-black rounded-xl text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer active:translate-y-[1px]"
-                    aria-label="Avvalgi hafta"
+                    aria-label={t('slots.prevWeek')}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
@@ -277,12 +277,12 @@ export default function SlotsPage() {
                     onClick={handleToday}
                     className="px-3 py-1.5 min-h-[44px] bg-[#2A3442] hover:bg-gray-700 border-2 border-black rounded-xl text-xs font-bold text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
                   >
-                    Bugun
+                    {t('slots.today')}
                   </button>
                   <button
                     onClick={handleNextWeek}
                     className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[#2A3442] hover:bg-gray-700 border-2 border-black rounded-xl text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer active:translate-y-[1px]"
-                    aria-label="Keyingi hafta"
+                    aria-label={t('slots.nextWeek')}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
@@ -473,8 +473,8 @@ export default function SlotsPage() {
                 </div>
               ) : filteredSlots.length === 0 ? (
                 <EmptyState
-                  title="Slotlar topilmadi"
-                  description={"Ushbu filtr bo'yicha hech qanday dars yozuvi topilmadi. O'qitish uchun yangi dars ko'rsatkichi yaratishingiz mumkin."}
+                  title={t('slots.search.noSlotsFound')}
+                  description={t('slots.subtitle')}
                   icon={<CalendarClock className="h-8 w-8 text-black" />}
                 />
               ) : (
@@ -496,7 +496,7 @@ export default function SlotsPage() {
           setIsModalOpen(false);
           setPrefilledTime('');
         }}
-        title="Yangi Dars Slotini Yaratish"
+        title={t('slots.form.title')}
       >
         <CreateSlotForm
           teachableProjects={teachableProjects}

@@ -242,7 +242,7 @@ export default function SettingsPage() {
                 }}
                 className="w-full sm:w-auto min-h-11"
               >
-                Telegram ulanishini uzish
+                {t('settings.security.unlinkBtn')}
               </Button>
             </div>
           </div>
@@ -271,7 +271,7 @@ export default function SettingsPage() {
                 onClick={() => setShowLogoutModal(true)}
                 className="w-full sm:w-auto min-h-11"
               >
-                Tizimdan chiqish
+                {t('settings.logout.btn')}
               </Button>
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function SettingsPage() {
                 onClick={() => setShowLogoutModal(false)}
                 className="w-full sm:w-auto min-h-11"
               >
-                Qolish
+                {t('settings.logoutModal.cancelBtn')}
               </Button>
               <Button
                 variant="danger"
@@ -305,7 +305,7 @@ export default function SettingsPage() {
                 }}
                 className="w-full sm:w-auto min-h-11"
               >
-                Chiqish
+                {t('settings.logoutModal.confirmBtn')}
               </Button>
             </div>
           </div>
@@ -369,7 +369,7 @@ export default function SettingsPage() {
                   disabled={isUnlinking}
                   className="w-full sm:flex-1 min-h-11"
                 >
-                  Bekor qilish
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   type="submit"

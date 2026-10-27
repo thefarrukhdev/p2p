@@ -23,10 +23,10 @@ export default function NotFoundPage() {
             ERROR 404
           </span>
           <h1 className="text-2xl sm:text-3xl font-black font-montserrat uppercase tracking-tight text-white">
-            Sahifa topilmadi
+            {t('common.pageNotFound')}
           </h1>
           <p className="text-sm text-[#B0BEC5] leading-relaxed max-w-sm font-sans">
-            Siz qidirayotgan manzil mavjud emas, o'chirilgan yoki ko'chirilgan bo'lishi mumkin.
+            {t('common.pageNotFoundDesc')}
           </p>
         </div>
 
@@ -37,7 +37,7 @@ export default function NotFoundPage() {
             className="flex-1 justify-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Ortga qaytish</span>
+            <span>{t('common.back')}</span>
           </Button>
 
           <Link to="/dashboard" className="flex-1">
@@ -46,7 +46,7 @@ export default function NotFoundPage() {
               className="w-full justify-center gap-2"
             >
               <Home className="w-4 h-4" />
-              <span>{t('navigation.dashboard', 'Dashboard')}</span>
+              <span>{t('nav.dashboard')}</span>
             </Button>
           </Link>
         </div>

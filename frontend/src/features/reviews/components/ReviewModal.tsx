@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,7 +9,7 @@ import { triggerToast } from '@/shared/stores/toast';
 import { ThumbsUp, ThumbsDown, Send } from 'lucide-react';
 
 const reviewSchema = z.object({
-  comment: z.string().max(500, 'Fikr-mulohaza 500 ta belgidan oshmasligi kerak').optional(),
+  comment: z.string().max(500).optional(),
 });
 
 type FormValues = z.infer<typeof reviewSchema>;
@@ -20,6 +21,7 @@ interface ReviewModalProps {
 }
 
 export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
+  const { t } = useTranslation();
   const { createReview, isCreatingReview } = useReviews();
   const [isPositive, setIsPositive] = useState<boolean>(true);
 
@@ -40,7 +42,7 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
 
   const onFormSubmit = async (values: FormValues) => {
     if (!slotId) {
-      triggerToast('Fikr bildirish uchun slot identifikatori talab qilinadi!', 'error');
+      triggerToast(t('common.error'), 'error');
       return;
     }
 
@@ -53,7 +55,7 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
       reset();
       setIsPositive(true);
       onClose();
-    } catch (e) {
+    } catch (_e) {
       // already caught inside useReviews triggering toast
     }
   };
@@ -65,14 +67,14 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Fikr-Mulohaza Qoldirish">
+    <Modal isOpen={isOpen} onClose={handleClose} title={t('slotDetail.review.modalTitle')}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1.5 border-b-2 border-black pb-4">
           <span className="text-[10px] text-[#38C9E6] font-black tracking-widest uppercase font-montserrat">
-            DARS YAKUNIY FIKR-MULOHAZASI
+            {t('slotDetail.review.modalHeader')}
           </span>
           <p className="text-xs text-[#B0BEC5] leading-relaxed mt-1">
-            Dars jarayoni mobaynida qilingan tekshiruv, loyiha muhokamasi va sherigingizning ko'rsatgan yordami yuzasidan xolis fikringizni bildiring.
+            {t('slotDetail.review.modalDesc')}
           </p>
         </div>
 
@@ -80,7 +82,7 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
           {/* Choice selector */}
           <div className="flex flex-col gap-3">
             <label className="text-xs uppercase tracking-wider font-extrabold text-[#B0BEC5] font-montserrat">
-              Dars o'tish sifati va ishtiroki
+              {t('slotDetail.review.qualityLabel')}
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <button
@@ -95,7 +97,7 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
                 `}
               >
                 <ThumbsUp className="h-5 w-5 shrink-0" />
-                <span>IJOBIY (A'LO)</span>
+                <span>{t('slotDetail.review.positive')}</span>
               </button>
               <button
                 type="button"
@@ -109,7 +111,7 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
                 `}
               >
                 <ThumbsDown className="h-5 w-5 shrink-0" />
-                <span>SALBIY (YOMON)</span>
+                <span>{t('slotDetail.review.negative')}</span>
               </button>
             </div>
           </div>
@@ -117,12 +119,12 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
           {/* Comment text block */}
           <div className="flex flex-col gap-2 w-full">
             <label className="text-xs uppercase tracking-wider font-extrabold text-[#B0BEC5] flex flex-wrap justify-between items-center gap-1 font-montserrat">
-              <span>Fikr-mulohaza (Ixtiyoriy)</span>
-              <span className="font-ibm-plex-mono text-xs">{commentVal.length} / 500 ta belgi</span>
+              <span>{t('slotDetail.review.commentLabel')}</span>
+              <span className="font-ibm-plex-mono text-xs">{t('slotDetail.review.commentChars', { count: commentVal.length })}</span>
             </label>
             <textarea
               className="min-h-[120px] w-full rounded-2xl bg-[#34495E] border-2 border-black p-4 text-sm text-white placeholder:text-[#B0BEC5]/60 focus:outline-none focus:border-[#38C9E6] transition-all duration-150 disabled:opacity-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-              placeholder="Sherigingizning ijobiy tomonlari yoki tuzatilishi shart bo'lgan mezonlar haqida batafsil yozib qoldiring..."
+              placeholder={t('slotDetail.review.commentPlaceholder')}
               maxLength={500}
               disabled={isCreatingReview}
               {...register('comment')}
@@ -131,10 +133,11 @@ export function ReviewModal({ slotId, isOpen, onClose }: ReviewModalProps) {
           </div>
 
           <Button type="submit" variant="primary" className="w-full mt-2 font-montserrat uppercase tracking-wider font-extrabold" disabled={isCreatingReview}>
-            <Send className="h-4 w-4 text-black" /> {isCreatingReview ? 'Yuborilmoqda...' : 'Fikrni yuborish'}
+            <Send className="h-4 w-4 text-black" /> {isCreatingReview ? t('slotDetail.review.submitting') : t('slotDetail.review.submit')}
           </Button>
         </form>
       </div>
     </Modal>
   );
 }
+export default ReviewModal;

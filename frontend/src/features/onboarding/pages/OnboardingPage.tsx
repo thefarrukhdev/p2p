@@ -241,7 +241,7 @@ export default function OnboardingPage() {
                 onClick={() => setStep(1)}
                 disabled={submitLoading}
               >
-                Orqaga
+                {t('common.back')}
               </Button>
               <Button
                 variant="primary"
@@ -249,7 +249,7 @@ export default function OnboardingPage() {
                 onClick={handleConfirmLanguages}
                 disabled={submitLoading || selectedLanguages.length === 0}
               >
-                Onbordingni yakunlash
+                {t('onboarding.finishBtn')}
               </Button>
             </div>
           </div>
