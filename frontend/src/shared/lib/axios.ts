@@ -3,8 +3,13 @@ import { useAuthStore } from '@/features/auth/store';
 
 // Bitta manba: dev'da har doim `/api/v1` (Vite proxy -> localhost:8000),
 // localhost'da ham, IP orqali ham ishlaydi. Prod'da build vaqtida VITE_API_URL beriladi.
+const envApiUrl = import.meta.env.VITE_API_URL;
+const resolvedBaseUrl = (envApiUrl && !envApiUrl.includes('p2p-r5l6'))
+  ? envApiUrl
+  : 'https://p2p-o1ex.onrender.com/api/v1';
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: resolvedBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },

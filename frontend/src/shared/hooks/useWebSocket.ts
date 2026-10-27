@@ -23,7 +23,10 @@ export function useWebSocket() {
 
     const connect = () => {
       if (cancelled) return;
-      const apiUrl = import.meta.env.VITE_API_URL || '';
+      let apiUrl = import.meta.env.VITE_API_URL || '';
+      if (!apiUrl || apiUrl.includes('p2p-r5l6')) {
+        apiUrl = 'https://p2p-o1ex.onrender.com/api/v1';
+      }
       let wsUrl = '';
       
       if (apiUrl.startsWith('http')) {
