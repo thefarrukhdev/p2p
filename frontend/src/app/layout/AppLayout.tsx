@@ -42,7 +42,7 @@ export function AppLayout() {
           <Header unreadCount={unreadCount} />
         </div>
 
-        <main className="flex-grow p-4 sm:p-6 lg:px-10 lg:py-8 pb-28 lg:pb-8 max-w-[1440px] w-full mx-auto relative z-10">
+        <main className="flex-grow p-3.5 sm:p-6 lg:px-10 lg:py-8 pb-36 lg:pb-8 max-w-[1440px] w-full mx-auto relative z-10">
           <Outlet />
         </main>
       </div>

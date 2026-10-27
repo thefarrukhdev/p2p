@@ -17,6 +17,11 @@ import {
   LayoutDashboard,
   AlertTriangle,
   RefreshCw,
+  Shield,
+  Zap,
+  Trophy,
+  MapPin,
+  Plus,
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -100,9 +105,9 @@ export function Dashboard() {
           </div>
         </div>
         {/* Stats skeleton */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
           {[1, 2, 3, 4].map((n) => (
-            <Skeleton key={n} variant="rect" className="h-20 rounded-3xl" />
+            <Skeleton key={n} variant="rect" className="h-16 sm:h-20 rounded-2xl" />
           ))}
         </div>
         {/* Content skeleton */}
@@ -110,13 +115,13 @@ export function Dashboard() {
           <div className="flex flex-col gap-3">
             <Skeleton variant="text" className="w-32 h-4" />
             {[1, 2, 3].map((n) => (
-              <Skeleton key={n} variant="rect" className="h-24 rounded-3xl" />
+              <Skeleton key={n} variant="rect" className="h-24 rounded-2xl" />
             ))}
           </div>
           <div className="flex flex-col gap-3">
             <Skeleton variant="text" className="w-32 h-4" />
             {[1, 2, 3].map((n) => (
-              <Skeleton key={n} variant="rect" className="h-20 rounded-3xl" />
+              <Skeleton key={n} variant="rect" className="h-20 rounded-2xl" />
             ))}
           </div>
         </div>
@@ -183,19 +188,22 @@ export function Dashboard() {
       </header>
 
       {/* ── KEY PERFORMANCE STATS ROW ── */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
         {[
-          { label: t('dashboard.stats.coalition'), value: currentUser?.coalition_name || t('dashboard.stats.noCoalition') },
-          { label: t('dashboard.stats.peerPoints'), value: `${currentUser?.peer_points ?? 0} PRP` },
-          { label: t('dashboard.stats.experience'), value: `${currentUser?.xp ?? 0} XP` },
-          { label: t('dashboard.stats.location'), value: currentUser?.current_location || t('dashboard.stats.offline') },
+          { label: t('dashboard.stats.coalition'), value: currentUser?.coalition_name || t('dashboard.stats.noCoalition'), icon: Shield, color: 'text-[#38C9E6]' },
+          { label: t('dashboard.stats.peerPoints'), value: `${currentUser?.peer_points ?? 0} PRP`, icon: Zap, color: 'text-[#ffd740]' },
+          { label: t('dashboard.stats.experience'), value: `${currentUser?.xp ?? 0} XP`, icon: Trophy, color: 'text-[#43E8A0]' },
+          { label: t('dashboard.stats.location'), value: currentUser?.current_location || t('dashboard.stats.offline'), icon: MapPin, color: 'text-[#B0BEC5]' },
         ].map((stat, idx) => (
           <div
             key={idx}
-            className="bg-[#2A3442] border-2 border-black rounded-3xl p-3 sm:p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col text-left gap-1"
+            className="bg-[#2A3442] border-2 border-black rounded-2xl p-3 sm:p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col text-left justify-between hover:translate-x-[1px] hover:translate-y-[1px] transition-all min-w-0"
           >
-            <span className="text-[9px] text-[#B0BEC5] uppercase tracking-widest font-black leading-none">{stat.label}</span>
-            <span className="text-xs sm:text-sm font-black text-white font-montserrat truncate mt-1">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[9px] sm:text-[10px] text-[#B0BEC5] uppercase tracking-wider font-extrabold truncate">{stat.label}</span>
+              <stat.icon className={`h-3.5 w-3.5 ${stat.color} shrink-0`} />
+            </div>
+            <span className="text-xs sm:text-sm font-black text-white font-montserrat truncate mt-1.5">
               {stat.value}
             </span>
           </div>
@@ -224,17 +232,21 @@ export function Dashboard() {
             {isLoadingSlots ? (
               <div className="flex flex-col gap-3">
                 {[1, 2, 3].map((n) => (
-                  <Skeleton key={n} variant="rect" className="h-24 rounded-3xl" />
+                  <Skeleton key={n} variant="rect" className="h-24 rounded-2xl" />
                 ))}
               </div>
             ) : mySchedule.length === 0 ? (
-              <div className="py-8 px-4 rounded-3xl border-2 border-black bg-[#2A3442] flex flex-col items-center justify-center text-center gap-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="py-7 px-4 rounded-2xl border-2 border-black bg-[#2A3442] flex flex-col items-center justify-center text-center gap-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <div className="h-10 w-10 rounded-xl bg-[#34495E] border-2 border-black flex items-center justify-center text-[#38C9E6] shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                  <CalendarDays className="h-5 w-5" />
+                </div>
                 <p className="text-xs text-[#B0BEC5]">{t('dashboard.schedule.empty')}</p>
                 <Button
                   variant="primary"
                   onClick={() => navigate('/slots')}
+                  className="text-xs uppercase tracking-wider font-extrabold"
                 >
-                  {t('dashboard.schedule.addSlot')}
+                  <Plus className="h-4 w-4" /> {t('dashboard.schedule.addSlot')}
                 </Button>
               </div>
             ) : (
@@ -286,7 +298,10 @@ export function Dashboard() {
 
           <div className="flex flex-col gap-3">
             {notifications.slice(0, 3).length === 0 ? (
-              <div className="py-8 px-4 rounded-3xl border-2 border-black bg-[#2A3442] flex items-center justify-center text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="py-7 px-4 rounded-2xl border-2 border-black bg-[#2A3442] flex flex-col items-center justify-center text-center gap-2.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <div className="h-10 w-10 rounded-xl bg-[#34495E] border-2 border-black flex items-center justify-center text-[#B0BEC5] shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                  <Bell className="h-5 w-5" />
+                </div>
                 <p className="text-xs text-[#B0BEC5]">{t('dashboard.notifications.empty')}</p>
               </div>
             ) : (
@@ -345,10 +360,10 @@ export function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {isLoadingSlots ? (
             [1, 2, 3].map((n) => (
-              <Skeleton key={n} variant="rect" className="h-24 rounded-3xl" />
+              <Skeleton key={n} variant="rect" className="h-24 rounded-2xl" />
             ))
           ) : availableSlots.length === 0 ? (
-            <div className="col-span-1 sm:col-span-2 md:col-span-3 py-6 text-center border-2 border-black rounded-3xl bg-[#2A3442] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="col-span-1 sm:col-span-2 md:col-span-3 py-7 px-4 text-center border-2 border-black rounded-2xl bg-[#2A3442] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center gap-2">
               <p className="text-xs text-[#B0BEC5]">{t('dashboard.available.empty')}</p>
             </div>
           ) : (
