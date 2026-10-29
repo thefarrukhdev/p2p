@@ -135,7 +135,31 @@ def format_pull_request(event: dict) -> str:
     return "\n".join(lines)
 
 
-def format_deployment_status(event: dict) -> str | None:
+def fetch_vercel_build_logs(token: str) -> list[str]:
+    """Fetch the latest Vercel build log events via API."""
+    try:
+        url = "https://api.vercel.com/v6/deployments?projectId=prj_gvSNNdflPJB5Vqydo4iR5McuoB30&limit=1"
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            data = json.loads(r.read().decode())
+            dep_id = data["deployments"][0]["uid"]
+
+        events_url = f"https://api.vercel.com/v2/deployments/{dep_id}/events?limit=40"
+        req = urllib.request.Request(events_url, headers={"Authorization": f"Bearer {token}"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            events = json.loads(r.read().decode())
+            logs = []
+            for ev in events:
+                payload = ev.get("payload", {})
+                text = payload.get("text")
+                if text:
+                    logs.append(text)
+            return logs[-8:]
+    except Exception:
+        return []
+
+
+def format_deployment_status(event: dict, vercel_token: str | None = None) -> str | None:
     dep_status = event.get("deployment_status", {})
     state = dep_status.get("state", "").lower()
     deployment = event.get("deployment", {})
@@ -168,6 +192,15 @@ def format_deployment_status(event: dict) -> str | None:
     if target_url:
         lines.append(f"Sayt: <a href=\"{target_url}\">{target_url}</a>")
 
+    if state in ("failure", "error") and vercel_token:
+        logs = fetch_vercel_build_logs(vercel_token)
+        if logs:
+            lines.extend([
+                "",
+                "<b>Vercel Build Loglari:</b>",
+                f"<pre>{html.escape(chr(10).join(logs))}</pre>"
+            ])
+
     lines.append(f"Vaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
     return "\n".join(lines)
 
@@ -175,6 +208,7 @@ def format_deployment_status(event: dict) -> str | None:
 def main() -> None:
     bot_token = os.environ.get("BOT_TOKEN")
     chat_id = os.environ.get("CHAT_ID")
+    vercel_token = os.environ.get("VERCEL_TOKEN")
     event_name = os.environ.get("EVENT_NAME", "")
     event_path = os.environ.get("GITHUB_EVENT_PATH", "")
 
@@ -197,7 +231,7 @@ def main() -> None:
     elif event_name == "pull_request":
         msg = format_pull_request(event)
     elif event_name == "deployment_status":
-        msg = format_deployment_status(event)
+        msg = format_deployment_status(event, vercel_token)
     elif event_name == "workflow_dispatch":
         msg = (
             f"✅ <b>[GitHub Actions] Test Xabari</b>\n"

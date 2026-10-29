@@ -24,6 +24,7 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_LOGGER_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_LOGGER_CHAT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
         run: |

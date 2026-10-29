@@ -141,11 +141,61 @@ async def handle_telegram_command(command: str) -> None:
         )
         await send_telegram_log(text)
 
+    elif cmd in ("/logs", "logs"):
+        from app.core.config import settings
+        lines = [
+            "<b>[Vercel So'nggi Deploy Loglari]</b>",
+            "━━━━━━━━━━━━━━━━━━━━",
+        ]
+        if settings.VERCEL_TOKEN:
+            try:
+                url = f"https://api.vercel.com/v6/deployments?projectId={settings.VERCEL_PROJECT_ID}&limit=1"
+                headers = {"Authorization": f"Bearer {settings.VERCEL_TOKEN}"}
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    resp = await client.get(url, headers=headers)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        deps = data.get("deployments", [])
+                        if deps:
+                            dep = deps[0]
+                            dep_state = dep.get("state", "UNKNOWN")
+                            icon = "✅" if dep_state == "READY" else "❌" if dep_state in ("ERROR", "CANCELED") else "⏳"
+                            lines[0] = f"{icon} <b>[Vercel So'nggi Deploy Holati]</b>"
+                            lines.extend([
+                                f"Holat: <code>{dep_state}</code>",
+                                f"Commit: <i>{html.escape(dep.get('meta', {}).get('githubCommitMessage', 'Noma\'lum'))}</i>",
+                                f"Sayt: <a href=\"https://{dep.get('url')}\">{dep.get('url')}</a>",
+                                f"Deploy ID: <code>{dep.get('uid')}</code>",
+                            ])
+                            # If error or failure, get events
+                            if dep_state in ("ERROR", "CANCELED"):
+                                ev_url = f"https://api.vercel.com/v2/deployments/{dep.get('uid')}/events?limit=25"
+                                ev_resp = await client.get(ev_url, headers=headers)
+                                if ev_resp.status_code == 200:
+                                    events = ev_resp.json()
+                                    err_lines = [e.get("payload", {}).get("text") for e in events if e.get("payload", {}).get("text")]
+                                    if err_lines:
+                                        lines.extend([
+                                            "",
+                                            "<b>Xatolik logi:</b>",
+                                            f"<pre>{html.escape(chr(10).join(err_lines[-6:]))}</pre>"
+                                        ])
+                    else:
+                        lines.append(f"Vercel API xatosi: {resp.status_code}")
+            except Exception as exc:
+                lines.append(f"Loglarni olishda xatolik: {exc}")
+        else:
+            lines.append("VERCEL_TOKEN sozlanmagan.")
+
+        lines.append(f"Vaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
+        await send_telegram_log("\n".join(lines))
+
     elif cmd in ("/help", "help"):
         text = (
             "<b>P2P DevOps Bot Buyruqlari:</b>\n"
             "━━━━━━━━━━━━━━━━━━━━\n"
             "• <code>/status</code> - Serverlar, Database va Redisning jonli holati\n"
+            "• <code>/logs</code> - Vercelning so'nggi deploy va build loglari\n"
             "• <code>/ping</code> - Tezkor aloqa tekshiruvi\n"
             "• <code>/help</code> - Ushbu yordam oynasi"
         )

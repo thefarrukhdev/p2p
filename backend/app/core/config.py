@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     TELEGRAM_LOGGER_BOT_TOKEN: str = ""
     TELEGRAM_LOGGER_CHAT_ID: str = ""
 
+    # Vercel Integration
+    VERCEL_TOKEN: str = ""
+    VERCEL_PROJECT_ID: str = "prj_gvSNNdflPJB5Vqydo4iR5McuoB30"
+
     @property
     def admin_ids(self) -> list[int]:
         if not self.ADMIN_IDS:
