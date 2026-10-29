@@ -54,24 +54,24 @@ def format_push(event: dict) -> str | None:
 
     if deleted:
         return (
-            f"🗑 <b>GitHub: Branch O'chirildi</b>\n"
+            f"❌ <b>[GitHub] Branch O'chirildi</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"📦 <b>Repo:</b> <code>{repo}</code>\n"
-            f"🌿 <b>Branch:</b> <code>{branch}</code>\n"
-            f"👤 <b>Foydalanuvchi:</b> {pusher}\n"
+            f"Repo: <code>{repo}</code>\n"
+            f"Branch: <code>{branch}</code>\n"
+            f"Foydalanuvchi: {pusher}\n"
         )
 
     if not commits and not created:
         return None
 
     lines = [
-        f"🐙 <b>GitHub: Yangi Push</b>",
+        f"<b>[GitHub] Yangi Push</b>",
         f"━━━━━━━━━━━━━━━━━━━━",
-        f"📦 <b>Repo:</b> <code>{repo}</code>",
-        f"🌿 <b>Branch:</b> <code>{branch}</code>",
-        f"👤 <b>Muallif:</b> <b>{pusher}</b>",
+        f"Repo: <code>{repo}</code>",
+        f"Branch: <code>{branch}</code>",
+        f"Muallif: <b>{pusher}</b>",
         "",
-        f"📝 <b>Commitlar ({len(commits)}):</b>",
+        f"Commitlar ({len(commits)}):",
     ]
 
     for c in commits[:8]:
@@ -90,9 +90,9 @@ def format_push(event: dict) -> str | None:
 
     if compare_url:
         lines.append("")
-        lines.append(f"🔍 <a href=\"{compare_url}\">O'zgarishlarni ko'rish (Diff)</a>")
+        lines.append(f"Diff: <a href=\"{compare_url}\">O'zgarishlarni ko'rish</a>")
 
-    lines.append(f"🕒 <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
+    lines.append(f"Vaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
     return "\n".join(lines)
 
 
@@ -108,34 +108,30 @@ def format_pull_request(event: dict) -> str:
     base = html.escape(pr.get("base", {}).get("ref", "main"))
     head = html.escape(pr.get("head", {}).get("ref", ""))
 
-    status_icon = "🔀"
-    status_text = f"PR #{pr_num} {action.capitalize()}"
-
     if action == "closed":
         if merged:
-            status_icon = "🟣"
-            status_text = f"PR #{pr_num} Muvaffaqiyatli Birlashtirildi (Merged)!"
+            header = f"✅ <b>[GitHub] PR #{pr_num} Birlashtirildi (Merged)</b>"
         else:
-            status_icon = "⚪️"
-            status_text = f"PR #{pr_num} Yopildi (Birlashtirilmadi)"
+            header = f"❌ <b>[GitHub] PR #{pr_num} Yopildi</b>"
     elif action == "opened":
-        status_icon = "🟢"
-        status_text = f"Yangi PR #{pr_num} Ochildi"
+        header = f"<b>[GitHub] Yangi PR #{pr_num} Ochildi</b>"
+    else:
+        header = f"<b>[GitHub] PR #{pr_num} {action.capitalize()}</b>"
 
     lines = [
-        f"{status_icon} <b>GitHub: {status_text}</b>",
+        header,
         f"━━━━━━━━━━━━━━━━━━━━",
-        f"📦 <b>Repo:</b> <code>{repo}</code>",
-        f"📌 <b>Sarlavha:</b> {pr_title}",
-        f"👤 <b>Muallif:</b> @{user}",
-        f"🔄 <b>Yo'nalish:</b> <code>{head}</code> ➔ <code>{base}</code>",
+        f"Repo: <code>{repo}</code>",
+        f"Sarlavha: {pr_title}",
+        f"Muallif: @{user}",
+        f"Yo'nalish: <code>{head}</code> ➔ <code>{base}</code>",
     ]
 
     if pr_url:
         lines.append("")
-        lines.append(f"🔗 <a href=\"{pr_url}\">Pull Requestni ochish</a>")
+        lines.append(f"Havola: <a href=\"{pr_url}\">Pull Requestni ochish</a>")
 
-    lines.append(f"🕒 <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
+    lines.append(f"Vaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
     return "\n".join(lines)
 
 
@@ -149,34 +145,30 @@ def format_deployment_status(event: dict) -> str | None:
     creator = html.escape(deployment.get("creator", {}).get("login", "Vercel"))
     ref = html.escape(deployment.get("ref", "main"))
 
-    # Faqat yakuniy yoki muhim holatlarni yuboramiz (shovqin bo'lmasligi uchun)
     if state == "success":
-        icon = "🚀"
-        title = f"Vercel: Deployment Muvaffaqiyatli! ({environment})"
+        title = f"✅ <b>[Vercel] Deployment Muvaffaqiyatli ({environment})</b>"
     elif state in ("failure", "error"):
-        icon = "❌"
-        title = f"Vercel: Deployment Xatolik Bilan Tugadi! ({environment})"
+        title = f"❌ <b>[Vercel] Deploymentda Xatolik ({environment})</b>"
     elif state == "in_progress":
-        icon = "⏳"
-        title = f"Vercel: Deployment Jarayonda... ({environment})"
+        title = f"<b>[Vercel] Deployment Jarayonda ({environment})</b>"
     else:
         return None
 
     lines = [
-        f"{icon} <b>{title}</b>",
+        title,
         f"━━━━━━━━━━━━━━━━━━━━",
-        f"🌐 <b>Muhit:</b> <code>{environment}</code>",
-        f"🌿 <b>Branch:</b> <code>{ref}</code>",
-        f"👤 <b>Trigger:</b> @{creator}",
+        f"Muhit: <code>{environment}</code>",
+        f"Branch: <code>{ref}</code>",
+        f"Trigger: @{creator}",
     ]
 
     if description:
-        lines.append(f"📝 <b>Tavsif:</b> {description}")
+        lines.append(f"Tavsif: {description}")
 
     if target_url:
-        lines.append(f"🔗 <b>Sayt Havolasi:</b> <a href=\"{target_url}\">{target_url}</a>")
+        lines.append(f"Sayt: <a href=\"{target_url}\">{target_url}</a>")
 
-    lines.append(f"🕒 <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
+    lines.append(f"Vaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
     return "\n".join(lines)
 
 
@@ -192,7 +184,7 @@ def main() -> None:
 
     if not event_path or not os.path.exists(event_path):
         print(f"Event file not found at {event_path}. Sending fallback notification.")
-        text = f"ℹ️ <b>GitHub Action:</b> <code>{html.escape(event_name)}</code> hodisasi ishga tushirildi."
+        text = f"<b>[GitHub Actions]</b> <code>{html.escape(event_name)}</code> hodisasi ishga tushirildi."
         send_telegram_message(bot_token, chat_id, text)
         return
 
@@ -208,12 +200,12 @@ def main() -> None:
         msg = format_deployment_status(event)
     elif event_name == "workflow_dispatch":
         msg = (
-            f"⚡️ <b>GitHub Actions: Test Xabari</b>\n"
+            f"✅ <b>[GitHub Actions] Test Xabari</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"📦 <b>Repo:</b> <code>{html.escape(event.get('repository', {}).get('full_name', 'p2p'))}</code>\n"
-            f"👤 <b>Bajaruvchi:</b> {html.escape(event.get('sender', {}).get('login', 'Admin'))}\n"
-            f"✅ Telegram bot aloqasi muvaffaqiyatli ishlamoqda!\n"
-            f"🕒 <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>"
+            f"Repo: <code>{html.escape(event.get('repository', {}).get('full_name', 'p2p'))}</code>\n"
+            f"Bajaruvchi: {html.escape(event.get('sender', {}).get('login', 'Admin'))}\n"
+            f"Telegram bot aloqasi muvaffaqiyatli ishlamoqda.\n"
+            f"Vaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>"
         )
     else:
         print(f"Unhandled event: {event_name}")

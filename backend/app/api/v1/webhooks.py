@@ -42,16 +42,15 @@ async def client_log(
     background_tasks: BackgroundTasks,
 ) -> dict[str, str]:
     """Log an event or error message directly to the Telegram group."""
-    icon = "⚡️"
     if req.level.upper() in ("ERROR", "CRITICAL", "FATAL"):
-        icon = "🚨"
-    elif req.level.upper() == "WARN":
-        icon = "⚠️"
+        icon = "❌"
+    else:
+        icon = "✅"
 
     text = (
         f"{icon} <b>[{req.source.upper()}] Log ({req.level.upper()})</b>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"💬 <b>Xabar:</b> {req.message}\n"
+        f"Xabar: {req.message}\n"
     )
     if req.details:
         import json

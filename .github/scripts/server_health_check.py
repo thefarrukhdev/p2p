@@ -106,31 +106,29 @@ def main() -> None:
     # Agar server qulagan bo'lsa darhol Qizil Alert yuboramiz
     if has_failure:
         lines = [
-            "🚨 <b>DIQQAT: SERVER ISHLAMAYAPTI (DOWN ALERT)!</b>",
+            "❌ <b>DIQQAT: SERVER ISHLAMAYAPTI (DOWN ALERT)</b>",
             "━━━━━━━━━━━━━━━━━━━━",
-            "⚠️ Quyidagi serverlarda nosozlik aniqlandi:",
+            "Nosozlik aniqlangan serverlar:",
             "",
         ]
         for r in results:
             if not r["is_ok"]:
                 lines.append(
                     f"❌ <b>{r['name']}</b> ({r['team']} Developerlar)\n"
-                    f"🔗 URL: {r['url']}\n"
-                    f"⚠️ Sabab: <code>{html.escape(str(r['error']))}</code>\n"
-                    f"⏱ Javob vaqti: <code>{r['latency_ms']}ms</code>\n"
+                    f"URL: {r['url']}\n"
+                    f"Sabab: <code>{html.escape(str(r['error']))}</code>\n"
+                    f"Javob vaqti: <code>{r['latency_ms']}ms</code>\n"
                 )
-        lines.append("<i>Iltimos, zudlik bilan server va loglarni tekshiring!</i>")
-        lines.append(f"🕒 <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
+        lines.append("<i>Zudlik bilan server va loglarni tekshiring.</i>")
+        lines.append(f"Vaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
         send_telegram_message(bot_token, chat_id, "\n".join(lines))
         return
 
     # Agar faqat nosozlik bo'lganda yuborish rejimida bo'lmasa, umumiy holat hisobotini yuboramiz
     if not only_alerts:
         lines = [
-            "🟢 <b>Serverlar Holati: Barcha Tizimlar Barqaror</b>",
+            "✅ <b>Serverlar Holati: Barcha Tizimlar Barqaror</b>",
             "━━━━━━━━━━━━━━━━━━━━",
-            "🌐 <b>Tizim monitoringi hisoboti:</b>",
-            "",
         ]
         for r in results:
             lines.append(
@@ -139,8 +137,7 @@ def main() -> None:
                 f"   • Ping: <code>{r['latency_ms']}ms</code>\n"
                 f"   • Link: <a href=\"{r['url']}\">{r['url']}</a>"
             )
-        lines.append("")
-        lines.append(f"🕒 <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
+        lines.append(f"\nVaqt: <code>{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</code>")
         send_telegram_message(bot_token, chat_id, "\n".join(lines))
 
 
