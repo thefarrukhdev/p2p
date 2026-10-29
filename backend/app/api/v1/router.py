@@ -12,6 +12,7 @@ from app.api.v1 import (
     reviews,
     settings,
     slots,
+    webhooks,
 )
 
 api_router = APIRouter(prefix="/api/v1")
@@ -25,3 +26,4 @@ api_router.include_router(profile.router)
 api_router.include_router(settings.router)
 api_router.include_router(notifications.router)
 api_router.include_router(admin.router)
+api_router.include_router(webhooks.router)

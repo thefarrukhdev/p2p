@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     TELEGRAM_REQUIRED_CHANNEL: str = ""
     ADMIN_IDS: str = ""  # Comma separated Telegram IDs
 
+    # Telegram DevOps Logger (GitHub/Vercel/Error Alerts)
+    TELEGRAM_LOGGER_BOT_TOKEN: str = ""
+    TELEGRAM_LOGGER_CHAT_ID: str = ""
+
     @property
     def admin_ids(self) -> list[int]:
         if not self.ADMIN_IDS:
