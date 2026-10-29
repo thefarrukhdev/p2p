@@ -13,13 +13,20 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from app.core.config import settings
 
+engine_kwargs = {
+    "echo": settings.DEBUG,
+}
+if "sqlite" not in settings.DATABASE_URL:
+    engine_kwargs.update(
+        pool_pre_ping=True,
+        pool_recycle=300,
+        pool_size=5,
+        max_overflow=5,
+    )
+
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_pre_ping=True,
-    pool_recycle=300,
-    pool_size=5,
-    max_overflow=5,
+    **engine_kwargs,
 )
 
 AsyncSessionLocal = async_sessionmaker(

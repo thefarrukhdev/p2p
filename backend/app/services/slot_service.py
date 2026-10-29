@@ -1,7 +1,7 @@
 """Slot lifecycle business logic: create, book, start, finish, absent, cancel."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,34 +54,58 @@ async def create_slot(
 async def book_slot(
     db: AsyncSession, slot: Slot, reviewee: User, reviewee_project: str | None
 ) -> Slot:
-    if slot.status != SlotStatus.OPEN.value:
+    from sqlalchemy import select
+    # 1. Lock slot row in DB to prevent concurrent booking race condition.
+    # populate_existing=True ensures the identity map updates with latest row state.
+    slot_stmt = (
+        select(Slot)
+        .where(Slot.id == slot.id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    locked_slot = (await db.execute(slot_stmt)).scalar_one_or_none()
+    target_slot = locked_slot if locked_slot is not None else slot
+
+    if target_slot.status != SlotStatus.OPEN.value:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Slot is not open"
         )
-    if slot.reviewer_id == reviewee.id:
+    if target_slot.reviewer_id == reviewee.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot book your own slot",
         )
-    if not points_service.can_book_slot(reviewee):
+
+    # 2. Lock reviewee row in DB to prevent concurrent point double-spending.
+    # populate_existing=True ensures updated peer_points are re-read from DB.
+    user_stmt = (
+        select(User)
+        .where(User.id == reviewee.id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    locked_user = (await db.execute(user_stmt)).scalar_one_or_none()
+    target_user = locked_user if locked_user is not None else reviewee
+
+    if not points_service.can_book_slot(target_user):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Not enough peer points",
         )
 
-    slot.reviewee_id = reviewee.id
-    slot.reviewee_project = reviewee_project
-    slot.status = SlotStatus.BOOKED.value
-    points_service.add_peer_points(reviewee, -1)
+    target_slot.reviewee_id = target_user.id
+    target_slot.reviewee_project = reviewee_project
+    target_slot.status = SlotStatus.BOOKED.value
+    points_service.add_peer_points(target_user, -1)
 
     await create_notification(
-        db, slot.reviewer_id, "slot_booked", "Slot band qilindi", slot_id=slot.id
+        db, target_slot.reviewer_id, "slot_booked", "Slot band qilindi", slot_id=target_slot.id
     )
     await create_notification(
-        db, reviewee.id, "slot_booked", "Slot band qilindi", slot_id=slot.id
+        db, target_user.id, "slot_booked", "Slot band qilindi", slot_id=target_slot.id
     )
     await db.flush()
-    return slot
+    return target_slot
 
 
 async def start_slot(db: AsyncSession, slot: Slot, user: User) -> Slot:
@@ -150,6 +174,13 @@ async def mark_absent(db: AsyncSession, slot: Slot, actor: User) -> Slot:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Absent can only be marked on booked/in-progress slots",
+        )
+
+    now = _now()
+    if now < slot.start_time + timedelta(minutes=ABSENT_GRACE_MINUTES):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Absent can only be marked {ABSENT_GRACE_MINUTES} minutes after scheduled start time",
         )
 
     reviewer = await db.get(User, slot.reviewer_id)

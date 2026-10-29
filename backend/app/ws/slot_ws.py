@@ -29,7 +29,7 @@ async def _authenticate(token: str | None) -> User | None:
         return None
     async with AsyncSessionLocal() as db:
         user = await db.get(User, user_id)
-        return user if user and user.is_active else None
+        return user if user and user.is_active and user.is_logged_in else None
 
 
 @router.websocket("/ws/slots")
@@ -62,6 +62,11 @@ async def slots_feed_websocket(
         # Klient odatda hech narsa yubormaydi; bu disconnect'ni aniqlaydi.
         while True:
             await websocket.receive_text()
+            async with AsyncSessionLocal() as db:
+                current_user = await db.get(User, user.id)
+                if not current_user or not current_user.is_active or not current_user.is_logged_in:
+                    await websocket.close(code=4401)
+                    break
     except WebSocketDisconnect:
         pass
     except Exception:
@@ -86,11 +91,33 @@ async def slot_websocket(
         await websocket.close(code=4401)
         return
 
-    await manager.connect(slot_id, websocket)
+    try:
+        sid = uuid.UUID(slot_id)
+    except (ValueError, TypeError):
+        await websocket.close(code=4404)
+        return
+
+    async with AsyncSessionLocal() as db:
+        slot = await db.get(Slot, sid)
+        if slot is None:
+            await websocket.close(code=4404)
+            return
+        if user.id != slot.reviewer_id and user.id != slot.reviewee_id and not user.is_admin:
+            await websocket.close(code=4403)
+            return
+
+    await manager.connect(slot_id, websocket, user.id)
     try:
         while True:
             data = await websocket.receive_json()
-            await _handle_client_event(slot_id, user, data)
+            # Session revocation check: verify user has not logged out or been deactivated
+            async with AsyncSessionLocal() as db:
+                current_user = await db.get(User, user.id)
+                if not current_user or not current_user.is_active or not current_user.is_logged_in:
+                    await websocket.close(code=4401)
+                    await manager.disconnect(slot_id, websocket)
+                    return
+            await _handle_client_event(slot_id, current_user, data)
     except WebSocketDisconnect:
         await manager.disconnect(slot_id, websocket)
     except Exception:
@@ -98,12 +125,21 @@ async def slot_websocket(
 
 
 async def _handle_client_event(slot_id: str, user: User, data: dict) -> None:
+    # Session revocation check: drop any event from an inactive or logged-out user
+    if not user.is_active or not user.is_logged_in:
+        return
+
     event = data.get("event")
-    sid = uuid.UUID(slot_id)
+    try:
+        sid = uuid.UUID(slot_id)
+    except (ValueError, TypeError):
+        return
 
     async with AsyncSessionLocal() as db:
         slot = await db.get(Slot, sid)
         if slot is None:
+            return
+        if user.id != slot.reviewer_id and user.id != slot.reviewee_id and not user.is_admin:
             return
 
         if event == "client.start":

@@ -28,6 +28,11 @@ celery_app.conf.beat_schedule = {
         "task": "app.tasks.slot_tasks.send_slot_reminders",
         "schedule": 60.0,
     },
+    # Telegram outbox retry dispatcher: processes pending notifications every minute.
+    "telegram-outbox-dispatch": {
+        "task": "app.tasks.slot_tasks.dispatch_telegram_notifications",
+        "schedule": 60.0,
+    },
     # Absent check: every minute look for stale booked/in-progress slots.
     "absent-check": {
         "task": "app.tasks.slot_tasks.check_absences",

@@ -175,6 +175,9 @@ export default function SlotDetailPage() {
   // Can start only if status is booked and we are within 15 minutes of the start time (or past it)
   const isTimeValidToStart = new Date().getTime() >= new Date(slot.start_time).getTime() - 15 * 60 * 1000;
   
+  // Can mark absent only 15 minutes after the scheduled start time
+  const isTimeValidForAbsent = new Date().getTime() >= new Date(slot.start_time).getTime() + 15 * 60 * 1000;
+
   const hasStarted = isReviewer ? slot.reviewer_started : slot.reviewee_started;
   
   const canStart = slot.status === 'booked' && (isReviewer || isReviewee) && isTimeValidToStart && !hasStarted;
@@ -344,7 +347,13 @@ export default function SlotDetailPage() {
 
               {/* Trigger Absence complaint */}
               {(slot.status === 'booked' || slot.status === 'in_progress') && (isReviewer || isReviewee) && (
-                <Button variant="ghost" onClick={handleAbsent} disabled={isAbsentingSlot} className="w-full sm:w-auto text-[#FF9B9B] hover:bg-[#FF9B9B]/5 border-2 border-transparent hover:border-black font-montserrat uppercase font-extrabold tracking-wider text-xs">
+                <Button
+                  variant="ghost"
+                  onClick={handleAbsent}
+                  disabled={isAbsentingSlot || !isTimeValidForAbsent}
+                  title={!isTimeValidForAbsent ? t('slotDetail.absentTimeLockNotice', 'Absens belgilash slot boshlanganidan 15 daqiqa o‘tib ochiladi') : ''}
+                  className="w-full sm:w-auto text-[#FF9B9B] hover:bg-[#FF9B9B]/5 border-2 border-transparent hover:border-black font-montserrat uppercase font-extrabold tracking-wider text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                >
                   {t('slotDetail.partnerAbsent')}
                 </Button>
               )}
