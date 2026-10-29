@@ -4,7 +4,7 @@ from __future__ import annotations
 import uuid
 from datetime import date
 
-from sqlalchemy import Date, ForeignKey, Index, Integer, String
+from sqlalchemy import Date, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -15,6 +15,7 @@ class LeaderboardSnapshot(Base, TimestampMixin):
     __tablename__ = "leaderboard_snapshots"
     __table_args__ = (
         Index("ix_leaderboard_month_category", "month", "category"),
+        UniqueConstraint("month", "category", "user_id", name="uq_leaderboard_month_cat_user"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(

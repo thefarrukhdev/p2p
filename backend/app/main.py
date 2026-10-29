@@ -23,7 +23,10 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await school21_client.start()
+    from app.ws.manager import manager
+    await manager.start()
     yield
+    await manager.stop()
     await school21_client.stop()
     await close_redis()
 

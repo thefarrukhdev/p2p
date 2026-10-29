@@ -96,7 +96,13 @@ async def search_slots(
 
 @router.get("/{slot_id}", response_model=SlotOut)
 async def get_slot(slot_id: uuid.UUID, user: CurrentUser, db: DbSession):
-    return await _get_slot_or_404(db, slot_id)
+    slot = await _get_slot_or_404(db, slot_id)
+    if not (slot.reviewer_id == user.id or slot.reviewee_id == user.id or user.is_admin):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to view this slot",
+        )
+    return slot
 
 
 @router.delete("/{slot_id}", response_model=SlotOut)

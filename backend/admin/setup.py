@@ -110,6 +110,9 @@ class NotificationAdmin(ModelView, model=Notification):
     column_list = [
         Notification.id, Notification.user_id, Notification.type,
         Notification.is_read, Notification.sent_telegram,
+        Notification.telegram_delivery_status,
+        Notification.telegram_claim_attempts, Notification.telegram_attempts,
+        Notification.telegram_next_retry_at, Notification.telegram_error,
     ]
 
 

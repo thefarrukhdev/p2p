@@ -8,13 +8,17 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 
 from app.core.dependencies import CurrentAdmin, DbSession
+from app.db.models.notification import Notification
 from app.db.models.review import Review
 from app.db.models.slot import Slot, SlotStatus
 from app.db.models.user import User
 from app.schemas.slot import SlotOut
 from app.schemas.user import UserMe
 from app.services import points_service, xp_service
-from app.services.notification_service import create_notification
+from app.services.notification_service import (
+    create_notification,
+    requeue_quarantined_notification,
+)
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -71,12 +75,48 @@ async def block_user(user_id: uuid.UUID, admin: CurrentAdmin, db: DbSession):
     user.is_active = not user.is_active
     await db.commit()
     await db.refresh(user)
+    if not user.is_active:
+        from app.ws.manager import manager
+        await manager.revoke_user(user.id)
     return user
 
 
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id: uuid.UUID, admin: CurrentAdmin, db: DbSession):
     user = await _get_user_or_404(db, user_id)
+    from app.ws.manager import manager
+    await manager.revoke_user(user.id)
+    # Check if user has relational dependencies to prevent Foreign Key Constraint errors
+    # (Slot, Review, XpLog, Notification, LeaderboardSnapshot)
+    from sqlalchemy import or_
+    from app.db.models.review import Review
+    from app.db.models.xp_log import XpLog
+    from app.db.models.notification import Notification
+    from app.db.models.leaderboard_snapshot import LeaderboardSnapshot
+
+    has_slots = (await db.execute(
+        select(Slot.id).where(or_(Slot.reviewer_id == user.id, Slot.reviewee_id == user.id))
+    )).scalars().first()
+    has_reviews = (await db.execute(
+        select(Review.id).where(or_(Review.author_id == user.id, Review.target_id == user.id))
+    )).scalars().first()
+    has_xp = (await db.execute(
+        select(XpLog.id).where(XpLog.user_id == user.id)
+    )).scalars().first()
+    has_notifs = (await db.execute(
+        select(Notification.id).where(Notification.user_id == user.id)
+    )).scalars().first()
+    has_snaps = (await db.execute(
+        select(LeaderboardSnapshot.id).where(LeaderboardSnapshot.user_id == user.id)
+    )).scalars().first()
+
+    if has_slots or has_reviews or has_xp or has_notifs or has_snaps:
+        # User has historical dependencies; deactivate instead of hard delete to preserve FK integrity
+        user.is_active = False
+        user.is_logged_in = False
+        await db.commit()
+        return None
+
     await db.delete(user)
     await db.commit()
     return None
@@ -99,20 +139,45 @@ async def list_slots(
 
 @router.post("/slots/{slot_id}/resolve", response_model=SlotOut)
 async def resolve_slot(slot_id: uuid.UUID, admin: CurrentAdmin, db: DbSession):
-    """Resolve a dispute: refund booking point to the reviewee."""
-    slot = await db.get(Slot, slot_id)
+    """Resolve a dispute: refund booking point to the reviewee atomically with row locking."""
+    # 1. Lock slot row in DB to prevent concurrent resolution races
+    slot_stmt = (
+        select(Slot)
+        .where(Slot.id == slot_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    slot = (await db.execute(slot_stmt)).scalar_one_or_none()
     if slot is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Slot not found"
         )
-    if slot.reviewee_id:
-        reviewee = await db.get(User, slot.reviewee_id)
-        if reviewee:
-            points_service.add_peer_points(reviewee, 1)
-    slot.status = SlotStatus.CANCELLED.value
-    await db.commit()
-    await db.refresh(slot)
-    return slot
+    if slot.status in (SlotStatus.COMPLETED.value, SlotStatus.CANCELLED.value):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Slot cannot be resolved in its current state ({slot.status})",
+        )
+
+    try:
+        if slot.reviewee_id:
+            # 2. Lock reviewee row to prevent concurrent balance mutations
+            user_stmt = (
+                select(User)
+                .where(User.id == slot.reviewee_id)
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            )
+            reviewee = (await db.execute(user_stmt)).scalar_one_or_none()
+            if reviewee:
+                points_service.add_peer_points(reviewee, 1)
+
+        slot.status = SlotStatus.CANCELLED.value
+        await db.commit()
+        await db.refresh(slot)
+        return slot
+    except Exception:
+        await db.rollback()
+        raise
 
 
 @router.delete("/reviews/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -185,4 +250,79 @@ async def stats(admin: CurrentAdmin, db: DbSession):
         "total_slots": total_slots,
         "completed_slots": completed,
         "avg_duration_minutes": float(avg_duration) if avg_duration else 0.0,
+    }
+
+
+@router.get("/quarantined-notifications")
+async def list_quarantined_notifications(
+    admin: CurrentAdmin,
+    db: DbSession,
+    limit: int = Query(50, ge=1, le=200),
+):
+    stmt = (
+        select(Notification)
+        .where(Notification.telegram_delivery_status == "quarantined_claim_exhausted")
+        .order_by(Notification.created_at.desc())
+        .limit(limit)
+    )
+    items = (await db.execute(stmt)).scalars().all()
+    return [
+        {
+            "id": str(notif.id),
+            "user_id": str(notif.user_id),
+            "type": notif.type,
+            "title": notif.title,
+            "claim_attempts": notif.telegram_claim_attempts,
+            "attempts": notif.telegram_attempts,
+            "error": notif.telegram_error,
+            "created_at": notif.created_at.isoformat() if notif.created_at else None,
+        }
+        for notif in items
+    ]
+
+
+@router.post("/quarantined-notifications/{notification_id}/retry")
+async def retry_quarantined_notification(
+    notification_id: uuid.UUID,
+    admin: CurrentAdmin,
+    db: DbSession,
+):
+    notif, err_code = await requeue_quarantined_notification(db, notification_id)
+    if notif is None:
+        if err_code == "not_found":
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Notification not found",
+            )
+        elif err_code and err_code.startswith("invalid_state:"):
+            current_st = err_code.split(":", 1)[1]
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Notification is in '{current_st}' status, only 'quarantined_claim_exhausted' can be retried",
+            )
+        elif err_code == "missing_telegram_id":
+            await db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Recipient user does not have a linked Telegram account",
+            )
+        elif err_code == "expired_past_lateness_deadline":
+            await db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot retry time-sensitive reminder past its 5-minute lateness deadline",
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot retry quarantined notification: {err_code}",
+            )
+    await db.commit()
+    return {
+        "status": "requeued",
+        "notification_id": str(notif.id),
+        "delivery_status": notif.telegram_delivery_status,
+        "claim_attempts": notif.telegram_claim_attempts,
+        "attempts": notif.telegram_attempts,
+        "audit_note": notif.telegram_error,
     }

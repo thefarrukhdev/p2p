@@ -52,3 +52,7 @@ graphify-out/
 Thumbs.db
 .directory
 Desktop.ini
+
+# Local test & manual database scripts
+test_db.py
+test_db_slots.py

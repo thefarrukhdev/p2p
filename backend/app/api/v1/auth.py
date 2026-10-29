@@ -261,8 +261,8 @@ async def refresh(payload: RefreshRequest, db: DbSession):
     if data is None or data.get("type") != "refresh":
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid refresh token")
     user = await db.get(User, uuid.UUID(data["sub"]))
-    if user is None or not user.is_active:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found")
+    if user is None or not user.is_active or not user.is_logged_in:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found, inactive or logged out")
     return _issue_tokens(user)
 
 
@@ -270,6 +270,8 @@ async def refresh(payload: RefreshRequest, db: DbSession):
 async def logout(user: CurrentUser, db: DbSession):
     user.is_logged_in = False
     await db.commit()
+    from app.ws.manager import manager
+    await manager.revoke_user(user.id)
     return None
 
 

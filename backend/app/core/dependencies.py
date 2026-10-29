@@ -53,9 +53,9 @@ async def get_current_user(
         )
 
     user = await db.get(User, user_id)
-    if user is None or not user.is_active:
+    if user is None or not user.is_active or not user.is_logged_in:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or inactive"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found, inactive or logged out"
         )
     return user
 
