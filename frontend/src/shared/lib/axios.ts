@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/features/auth/store';
+import { reportFrontendError } from '@/shared/lib/telemetry';
 
 // Bitta manba: dev'da har doim `/api/v1` (Vite proxy -> localhost:8000),
 // localhost'da ham, IP orqali ham ishlaydi. Prod'da build vaqtida VITE_API_URL beriladi.
@@ -117,6 +118,22 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
+      }
+    }
+
+    if (!originalRequest.url?.includes('/webhooks/')) {
+      const status = error.response?.status;
+      if ((status && status >= 500) || error.message === 'Network Error') {
+        reportFrontendError(
+          `API Xatosi (${status || 'Network Error'}): ${originalRequest.method?.toUpperCase()} ${originalRequest.url}`,
+          {
+            status: status || 0,
+            url: originalRequest.url,
+            method: originalRequest.method,
+            responseData: typeof error.response?.data === 'string' ? error.response.data.slice(0, 300) : error.response?.data,
+          },
+          'ERROR'
+        );
       }
     }
 

@@ -21,6 +21,7 @@ node_modules/
 dist/
 .next/
 .turbo/
+!frontend/src/**
 
 # Logs and runtime files
 .logs/

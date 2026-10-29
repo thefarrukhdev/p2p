@@ -1,0 +1,32 @@
+name: Server Health & Uptime Monitor
+
+on:
+  schedule:
+    # Har 1 soatda serverlar holatini tekshirish (UTC)
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      only_alerts:
+        description: "Faqat xatolik/nosozlik bo'lganda yuborish (true/false)"
+        required: false
+        default: "false"
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Server Health Check
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_LOGGER_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_LOGGER_CHAT_ID }}
+          ONLY_ALERTS: ${{ github.event.inputs.only_alerts || 'false' }}
+        run: |
+          python3 .github/scripts/server_health_check.py
