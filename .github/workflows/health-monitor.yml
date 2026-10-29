@@ -2,8 +2,8 @@ name: Server Health & Uptime Monitor
 
 on:
   schedule:
-    # Har 1 soatda serverlar holatini tekshirish (UTC)
-    - cron: '0 * * * *'
+    # Har 30 daqiqada serverlarni tekshirish va keep-alive (UTC)
+    - cron: '*/30 * * * *'
   workflow_dispatch:
     inputs:
       only_alerts:

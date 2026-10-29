@@ -5,6 +5,7 @@ from app.api.v1 import (
     admin,
     auth,
     dashboard,
+    diagnostics,
     leaderboard,
     notifications,
     onboarding,
@@ -27,3 +28,4 @@ api_router.include_router(settings.router)
 api_router.include_router(notifications.router)
 api_router.include_router(admin.router)
 api_router.include_router(webhooks.router)
+api_router.include_router(diagnostics.router)
