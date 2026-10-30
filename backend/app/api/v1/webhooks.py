@@ -161,9 +161,11 @@ async def handle_telegram_command(command: str) -> None:
                             dep_state = dep.get("state", "UNKNOWN")
                             icon = "✅" if dep_state == "READY" else "❌" if dep_state in ("ERROR", "CANCELED") else "⏳"
                             lines[0] = f"{icon} <b>[Vercel So'nggi Deploy Holati]</b>"
+                            raw_commit_msg = dep.get("meta", {}).get("githubCommitMessage") or "Noma'lum"
+                            safe_commit_msg = html.escape(str(raw_commit_msg))
                             lines.extend([
                                 f"Holat: <code>{dep_state}</code>",
-                                f"Commit: <i>{html.escape(dep.get('meta', {}).get('githubCommitMessage', 'Noma\'lum'))}</i>",
+                                f"Commit: <i>{safe_commit_msg}</i>",
                                 f"Sayt: <a href=\"https://{dep.get('url')}\">{dep.get('url')}</a>",
                                 f"Deploy ID: <code>{dep.get('uid')}</code>",
                             ])
