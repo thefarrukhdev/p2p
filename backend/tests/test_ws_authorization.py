@@ -175,12 +175,16 @@ class TestWebSocketAuthorization(unittest.IsolatedAsyncioTestCase):
             is_logged_in=False,
         )
 
-        with patch("app.db.base.AsyncSessionLocal") as mock_session_ctx:
+        with patch("app.ws.manager.AsyncSessionLocal") as mock_session_ctx:
             mock_db = AsyncMock()
             mock_db.get.return_value = logged_out_user
             mock_session_ctx.return_value.__aenter__.return_value = mock_db
 
             await mgr._broadcast_local(slot_id, '{"event": "slot.both_started", "secret": "link"}')
+
+            # Ensure mock session and mock DB were actually queried (cannot pass via DB failure)
+            mock_session_ctx.assert_called_once()
+            mock_db.get.assert_awaited_once_with(User, user_id)
 
             # Message must NOT be sent to the revoked user
             mock_ws.send_text.assert_not_called()
@@ -349,12 +353,16 @@ class TestWebSocketAuthorization(unittest.IsolatedAsyncioTestCase):
             is_logged_in=False,
         )
 
-        with patch("app.db.base.AsyncSessionLocal") as mock_session_ctx:
+        with patch("app.ws.manager.AsyncSessionLocal") as mock_session_ctx:
             mock_db = AsyncMock()
             mock_db.get.return_value = logged_out_user
             mock_session_ctx.return_value.__aenter__.return_value = mock_db
 
             await mgr._broadcast_local(slot_id, '{"event": "slot.both_started", "secret": "link"}')
+
+            # Ensure mock session and mock DB were actually queried (cannot pass via DB failure)
+            mock_session_ctx.assert_called_once()
+            mock_db.get.assert_awaited_once_with(User, user_id)
 
             # Message must NOT be sent to the revoked user
             mock_ws.send_text.assert_not_called()

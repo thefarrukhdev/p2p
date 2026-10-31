@@ -19,10 +19,14 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.logging import configure_secure_logging
 from app.services.cache import close_redis
 from app.services.school21_client import school21_client
 from app.services.telegram_logger import log_server_exception, send_telegram_log
 from app.ws.slot_ws import router as ws_router
+
+# Configure secure redaction for HTTPX and Telegram logging
+configure_secure_logging()
 
 # ── Rate Limiter ─────────────────────────────────────────────────────────────
 limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])

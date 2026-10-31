@@ -54,6 +54,11 @@ class Settings(BaseSettings):
     VERCEL_TOKEN: str = ""
     VERCEL_PROJECT_ID: str = "prj_gvSNNdflPJB5Vqydo4iR5McuoB30"
 
+    # Webhook Secrets
+    VERCEL_WEBHOOK_SECRET: str = ""
+    VERCEL_LOG_DRAIN_SECRET: str = ""
+    TELEGRAM_WEBHOOK_SECRET: str = ""
+
     @property
     def admin_ids(self) -> list[int]:
         if not self.ADMIN_IDS:

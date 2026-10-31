@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/features/auth/store';
 import { triggerToast } from '@/shared/stores/toast';
+import { getResolvedWsUrl } from '@/shared/lib/runtimeConfig';
 
 /**
  * Global real-time WebSocket (`/ws/slots`).
@@ -23,20 +24,9 @@ export function useWebSocket() {
 
     const connect = () => {
       if (cancelled) return;
-      let apiUrl = import.meta.env.VITE_API_URL || '';
-      if (!apiUrl || apiUrl.includes('p2p-r5l6')) {
-        apiUrl = 'https://p2p-o1ex.onrender.com/api/v1';
-      }
-      let wsUrl = '';
-      
-      if (apiUrl.startsWith('http')) {
-        const url = new URL(apiUrl);
-        const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
-        wsUrl = `${protocol}//${url.host}/ws/slots?token=${accessToken}`;
-      } else {
-        const loc = window.location;
-        const protocol = loc.protocol === 'https:' ? 'wss:' : 'ws:';
-        wsUrl = `${protocol}//${loc.host}/ws/slots?token=${accessToken}`;
+      const wsUrl = getResolvedWsUrl(accessToken);
+      if (!wsUrl) {
+        return;
       }
       
       ws = new WebSocket(wsUrl);
