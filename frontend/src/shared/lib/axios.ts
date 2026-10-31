@@ -1,13 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/features/auth/store';
 import { reportFrontendError } from '@/shared/lib/telemetry';
+import { getResolvedApiUrl } from '@/shared/lib/runtimeConfig';
 
-// Bitta manba: dev'da har doim `/api/v1` (Vite proxy -> localhost:8000),
-// localhost'da ham, IP orqali ham ishlaydi. Prod'da build vaqtida VITE_API_URL beriladi.
-const envApiUrl = import.meta.env.VITE_API_URL;
-const resolvedBaseUrl = (envApiUrl && !envApiUrl.includes('p2p-r5l6'))
-  ? envApiUrl
-  : 'https://p2p-o1ex.onrender.com/api/v1';
+const resolvedBaseUrl = getResolvedApiUrl();
 
 export const api = axios.create({
   baseURL: resolvedBaseUrl,
@@ -91,7 +87,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const baseURL = (api.defaults.baseURL || '/api/v1').replace(/\/+$/, '');
+        const baseURL = (getResolvedApiUrl() || api.defaults.baseURL || '/api/v1').replace(/\/+$/, '');
         const { data } = await axios.post(
           `${baseURL}/auth/refresh`,
           { refresh_token: refreshToken }

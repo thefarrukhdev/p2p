@@ -92,6 +92,9 @@ jobs:
       - name: Install Frontend Dependencies
         run: npm ci
 
+      - name: Run Frontend Tests (Routing & Telemetry)
+        run: npm test
+
       - name: Lint Check (Typecheck)
         run: npm run lint
 

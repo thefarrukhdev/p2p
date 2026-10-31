@@ -4,7 +4,14 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
+  const devTarget = process.env.VITE_BACKEND_TARGET || 'http://localhost:8000';
+  const wsTarget = devTarget.replace(/^http/, 'ws');
+  const vercelEnv = process.env.VITE_VERCEL_ENV || process.env.VERCEL_ENV || '';
+
   return {
+    define: {
+      'import.meta.env.VITE_VERCEL_ENV': JSON.stringify(vercelEnv),
+    },
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
@@ -15,8 +22,8 @@ export default defineConfig(() => {
       port: 5173,
       host: '0.0.0.0',
       proxy: {
-        '/api': { target: 'https://p2p-o1ex.onrender.com', changeOrigin: true },
-        '/ws': { target: 'wss://p2p-o1ex.onrender.com', ws: true, changeOrigin: true },
+        '/api': { target: devTarget, changeOrigin: true },
+        '/ws': { target: wsTarget, ws: true, changeOrigin: true },
       },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       hmr: process.env.DISABLE_HMR !== 'true',

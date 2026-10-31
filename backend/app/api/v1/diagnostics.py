@@ -9,6 +9,7 @@ from typing import Any
 from fastapi import APIRouter
 from sqlalchemy import text
 
+from app.core.dependencies import CurrentAdmin
 from app.db.base import AsyncSessionLocal
 from app.services.cache import redis_client
 
@@ -83,5 +84,5 @@ async def get_system_diagnostics() -> dict[str, Any]:
 
 
 @router.get("")
-async def get_diagnostics() -> dict[str, Any]:
+async def get_diagnostics(_admin: CurrentAdmin) -> dict[str, Any]:
     return await get_system_diagnostics()
