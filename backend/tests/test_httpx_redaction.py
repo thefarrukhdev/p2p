@@ -52,8 +52,9 @@ class TestHttpxSecretRedaction(unittest.TestCase):
         """Verify httpx INFO log redacts the token but keeps status and method visible."""
         url = f"https://api.telegram.org/bot{self.fake_token}/getMe"
 
-        # Dispatch an outgoing request via httpx
-        with httpx.Client() as client:
+        # Dispatch an outgoing request via httpx (using MockTransport for offline/isolated compatibility)
+        transport = httpx.MockTransport(lambda request: httpx.Response(401, json={"ok": False}))
+        with httpx.Client(transport=transport) as client:
             try:
                 client.get(url, timeout=5.0)
             except Exception:

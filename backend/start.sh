@@ -25,6 +25,18 @@ case "$TARGET" in
         ;;
 esac
 
+# ── Local Staging Safety Guard ───────────────────────────────────────────────
+if [[ "${LOCAL_STAGING:-0}" == "1" ]] || [[ "${ENFORCE_SAFETY_GUARD:-0}" == "1" ]]; then
+    echo "Running local staging runtime safety guard..."
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [[ -d "/app" ]]; then
+        cd /app
+    elif [[ -d "$SCRIPT_DIR/app" ]]; then
+        cd "$SCRIPT_DIR"
+    fi
+    python -m app.core.safety_guard || exit 1
+fi
+
 # ── Monolithic 'all' Mode Guard (Strictly Local with Explicit Opt-in) ─────────
 if [[ "$TARGET" == "all" ]]; then
     if [[ -n "$RENDER" ]] || [[ "$ENVIRONMENT" == "production" ]]; then

@@ -5,14 +5,26 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+import os
+from pathlib import Path
+
+_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+_ENV_PATH = _ROOT_DIR / ".env"
+_PARENT_ENV_PATH = _ROOT_DIR.parent / ".env"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=(str(_ENV_PATH), str(_PARENT_ENV_PATH), ".env"),
+        env_file_encoding="utf-8",
+        extra="ignore",
     )
 
     # App
     SECRET_KEY: str = "change-me"
     DEBUG: bool = False
+    LOCAL_STAGING: bool = False
+    ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: str = "https://t.me,https://school21-p2p.vercel.app"
 
     # Database / Redis
@@ -32,6 +44,9 @@ class Settings(BaseSettings):
     SCHOOL21_API_BASE: str = (
         "https://platform.21-school.ru/services/21-school/api/v1"
     )
+    KEYCLOAK_TOKEN_URL: str = (
+        "https://auth.21-school.ru/auth/realms/EduPowerKeycloak/protocol/openid-connect/token"
+    )
     FERNET_KEY: str = ""
 
     # JWT
@@ -42,9 +57,15 @@ class Settings(BaseSettings):
 
     # Telegram
     TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_BOT_USERNAME: str = "p2p_corpus_bot"
+    TELEGRAM_API_BASE: str = "https://api.telegram.org/bot"
     TELEGRAM_WEBHOOK_URL: str = ""
     TELEGRAM_REQUIRED_CHANNEL: str = ""
     ADMIN_IDS: str = ""  # Comma separated Telegram IDs
+
+    # Web Admin (SQLAdmin) Credentials
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD: str = "admin123"
 
     # Telegram DevOps Logger (GitHub/Vercel/Error Alerts)
     TELEGRAM_LOGGER_BOT_TOKEN: str = ""

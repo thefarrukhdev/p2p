@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+# Copy pre-installed Python dependencies
+COPY staging/backend_deps/site-packages /usr/local/lib/python3.11/site-packages/
+COPY staging/backend_deps/uvicorn staging/backend_deps/celery staging/backend_deps/alembic /usr/local/bin/
+RUN chmod +x /usr/local/bin/uvicorn /usr/local/bin/celery /usr/local/bin/alembic
+
+# Copy application code
+COPY backend/app ./app
+COPY backend/bot ./bot
+COPY backend/alembic ./alembic
+COPY backend/alembic.ini ./alembic.ini
+COPY backend/tests ./tests
+COPY backend/requirements.txt ./requirements.txt
+COPY backend/start.sh /start.sh
+RUN chmod +x /start.sh
+
+EXPOSE 8000
+
+CMD ["/start.sh"]

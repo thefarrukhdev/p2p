@@ -28,7 +28,10 @@ async def dispatch_notification(
         return True, False, None, None
 
     text = f"<b>{title or 'Bildirishnoma'}</b>\n\n{body or ''}"
-    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
+    base = (getattr(settings, "TELEGRAM_API_BASE", "") or "https://api.telegram.org/bot").rstrip("/")
+    if not base.endswith("/bot"):
+        base = f"{base}/bot"
+    url = f"{base}{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": telegram_id,
         "text": text,

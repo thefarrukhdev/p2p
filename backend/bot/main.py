@@ -258,7 +258,11 @@ class TelegramPollingLock:
 
 
 def build_application() -> Application:
-    app = Application.builder().token(settings.TELEGRAM_BOT_TOKEN).build()
+    builder = Application.builder().token(settings.TELEGRAM_BOT_TOKEN)
+    api_base = getattr(settings, "TELEGRAM_API_BASE", "")
+    if api_base and "api.telegram.org" not in api_base:
+        builder = builder.base_url(api_base)
+    app = builder.build()
     app.add_handler(get_start_handler())
     app.add_handler(get_admin_handler())
     app.add_handler(CommandHandler("webapp", webapp_cmd))

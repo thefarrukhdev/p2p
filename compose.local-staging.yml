@@ -1,0 +1,189 @@
+name: p2p-local-staging
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: p2p_local_staging_user
+      POSTGRES_PASSWORD: p2p_local_staging_pass
+      POSTGRES_DB: p2p_local_staging_db
+    volumes:
+      - staging_pgdata:/var/lib/postgresql/data
+    networks:
+      - staging_backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U p2p_local_staging_user -d p2p_local_staging_db"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    volumes:
+      - staging_redisdata:/data
+    networks:
+      - staging_backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  mock-telegram:
+    image: p2p-local-staging-mock-telegram:latest
+    volumes:
+      - ./staging/mock_telegram/server.py:/app/server.py
+    networks:
+      - staging_backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+
+  mock-school21:
+    image: p2p-local-staging-mock-school21:latest
+    networks:
+      - staging_backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8081/health')"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    image: p2p-local-staging-api:latest
+    command: ["/start.sh", "migrate"]
+    env_file:
+      - ./.env.local-staging
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - staging_backend
+    restart: "no"
+
+  api:
+    image: p2p-local-staging-api:latest
+    command: ["/start.sh", "api"]
+    env_file:
+      - ./.env.local-staging
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/bot:/app/bot
+      - ./backend/tests:/app/tests
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mock-telegram:
+        condition: service_healthy
+      mock-school21:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - staging_backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 3s
+      timeout: 5s
+      retries: 15
+
+  bot:
+    image: p2p-local-staging-api:latest
+    command: ["/start.sh", "bot"]
+    env_file:
+      - ./.env.local-staging
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/bot:/app/bot
+    deploy:
+      replicas: 1
+    depends_on:
+      redis:
+        condition: service_healthy
+      mock-telegram:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    networks:
+      - staging_backend
+
+  worker:
+    image: p2p-local-staging-api:latest
+    command: ["/start.sh", "worker"]
+    env_file:
+      - ./.env.local-staging
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/bot:/app/bot
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mock-telegram:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    networks:
+      - staging_backend
+
+  beat:
+    image: p2p-local-staging-api:latest
+    command: ["/start.sh", "beat"]
+    env_file:
+      - ./.env.local-staging
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/bot:/app/bot
+    deploy:
+      replicas: 1
+    depends_on:
+      redis:
+        condition: service_healthy
+      worker:
+        condition: service_started
+    networks:
+      - staging_backend
+
+  frontend:
+    image: p2p-local-staging-frontend:latest
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+    ports:
+      - "127.0.0.1:5174:5173"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - staging_backend
+      - staging_edge
+
+  api-proxy:
+    image: nginx:alpine
+    volumes:
+      - ./staging/api_proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:8008:8000"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - staging_backend
+      - staging_edge
+
+networks:
+  staging_backend:
+    driver: bridge
+    internal: true
+  staging_edge:
+    driver: bridge
+    internal: false
+
+volumes:
+  staging_pgdata:
+  staging_redisdata:

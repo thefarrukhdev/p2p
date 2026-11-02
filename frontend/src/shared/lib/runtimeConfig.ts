@@ -82,7 +82,12 @@ export function getResolvedApiUrl(): string {
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
   const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
   if (env.DEV || isLocal) {
-    if (envApiUrl && !envApiUrl.includes('p2p-r5l6')) {
+    if (
+      envApiUrl &&
+      !envApiUrl.includes('p2p-o1ex.onrender.com') &&
+      !envApiUrl.includes('p2p-r5l6') &&
+      !envApiUrl.includes('onrender.com')
+    ) {
       return envApiUrl.replace(/\/+$/, '');
     }
     return '/api/v1';

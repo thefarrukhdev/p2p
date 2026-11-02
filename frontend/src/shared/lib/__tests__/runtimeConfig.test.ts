@@ -192,3 +192,28 @@ test('local development defaults to relative proxy target', () => {
     setRuntimeEnvOverride(null);
   }
 });
+
+test('local development ignores production VITE_API_URL and safely defaults to relative proxy target', () => {
+  const originalWindow = (globalThis as any).window;
+  try {
+    setRuntimeEnvOverride({
+      VITE_API_URL: 'https://p2p-o1ex.onrender.com/api/v1',
+    });
+    (globalThis as any).window = {
+      location: {
+        hostname: '127.0.0.1',
+      },
+    };
+
+    assert.strictEqual(isStagingOrPreview(), false);
+    const apiUrl = getResolvedApiUrl();
+    assert.strictEqual(apiUrl, '/api/v1');
+
+    const wsUrl = getResolvedWsUrl('local_tok');
+    assert.ok(wsUrl.includes('/ws/slots?token=local_tok'));
+    assert.ok(!wsUrl.includes('p2p-o1ex'));
+  } finally {
+    (globalThis as any).window = originalWindow;
+    setRuntimeEnvOverride(null);
+  }
+});

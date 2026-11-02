@@ -4,6 +4,8 @@ Faqat is_admin=True bo'lgan foydalanuvchilar admin panelga kira oladi.
 """
 from __future__ import annotations
 
+import secrets
+
 from fastapi import FastAPI
 from sqladmin import Admin, ModelView
 from sqladmin.authentication import AuthenticationBackend
@@ -36,7 +38,16 @@ class AdminAuth(AuthenticationBackend):
         if not login or not password:
             return False
 
-        # School21 orqali autentifikatsiya
+        # 1. Superadmin statik login/parol tekshiruvi (.env ADMIN_USERNAME va ADMIN_PASSWORD)
+        configured_admin_user = getattr(settings, "ADMIN_USERNAME", "admin") or "admin"
+        configured_admin_pass = getattr(settings, "ADMIN_PASSWORD", "admin123") or "admin123"
+
+        if secrets.compare_digest(login, configured_admin_user) and secrets.compare_digest(password, configured_admin_pass):
+            token = create_access_token("superadmin", {"admin": True, "sub": "superadmin"})
+            request.session.update({"admin_token": token})
+            return True
+
+        # 2. School21 orqali autentifikatsiya
         from app.services.school21_client import school21_client
         import httpx
 

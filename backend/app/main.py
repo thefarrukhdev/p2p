@@ -29,7 +29,11 @@ from app.ws.slot_ws import router as ws_router
 configure_secure_logging()
 
 # ── Rate Limiter ─────────────────────────────────────────────────────────────
-limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["100/minute"],
+    enabled=not (getattr(settings, "LOCAL_STAGING", False) or getattr(settings, "ENVIRONMENT", "") == "test"),
+)
 
 
 @asynccontextmanager
