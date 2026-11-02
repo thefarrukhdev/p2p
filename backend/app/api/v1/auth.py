@@ -11,6 +11,7 @@ Oqim:
 from __future__ import annotations
 
 import logging
+import os
 import secrets
 import uuid
 
@@ -37,9 +38,20 @@ from app.services.school21_client import detect_main_track, school21_client
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+def _is_limiter_enabled() -> bool:
+    env = os.environ.get("ENVIRONMENT", "") or getattr(settings, "ENVIRONMENT", "")
+    if env in ("test", "testing"):
+        return False
+    if getattr(settings, "LOCAL_STAGING", False):
+        return False
+    return True
+
+
 limiter = Limiter(
     key_func=get_remote_address,
-    enabled=not (getattr(settings, "LOCAL_STAGING", False) or getattr(settings, "ENVIRONMENT", "") == "test"),
+    enabled=_is_limiter_enabled(),
 )
 
 OTP_TTL = 300  # 5 daqiqa
@@ -161,8 +173,9 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
         pass
 
     # 5. Telegram bog'langanmi tekshirish
-    if user.telegram_id:
-        # Telegram bor → to'g'ridan-to'g'ri JWT
+    enforce_2fa = getattr(settings, "ENFORCE_TELEGRAM_2FA", False)
+    if user.telegram_id and not enforce_2fa:
+        # Telegram bor va majburiy 2FA yo'q → to'g'ridan-to'g'ri JWT
         user.is_logged_in = True
         await db.commit()
         tokens = _issue_tokens(user)
@@ -173,7 +186,7 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
             onboarding_done=user.onboarding_done,
         )
     else:
-        # Telegram yo'q → temp_token berish, frontend botga yo'naltiradi
+        # Telegram yo'q yoki 2FA talab qilinadi → temp_token berish, frontend botga yo'naltiradi
         await db.commit()
 
         bot_token = settings.TELEGRAM_BOT_TOKEN
@@ -201,24 +214,8 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
                 except Exception:
                     pass
 
-        render_temp_token: str | None = None
-        # In non-staging mode with bot configured, sync temp_token with live bot backend on Render
-        if not getattr(settings, "LOCAL_STAGING", False) and bot_username == "p2p_corpus_bot":
-            try:
-                async with httpx.AsyncClient(timeout=4.0) as client:
-                    res = await client.post(
-                        "https://p2p-o1ex.onrender.com/api/v1/auth/login",
-                        json={"login": payload.login, "password": payload.password},
-                    )
-                    if res.status_code == 200:
-                        rdata = res.json()
-                        if rdata.get("status") == "need_telegram" and rdata.get("temp_token"):
-                            render_temp_token = rdata.get("temp_token")
-                            logger.info("Successfully synced temp_token with Render backend for %s", user.school21_login)
-            except Exception as exc:
-                logger.warning("Render login synchronization skipped/failed: %s", exc)
-
-        temp_token = render_temp_token or secrets.token_urlsafe(32)
+        # Generate fresh, isolated temp_token strictly within configured environment
+        temp_token = secrets.token_urlsafe(32)
         await redis_client.setex(
             f"{TEMP_TOKEN_PREFIX}{temp_token}",
             TEMP_TOKEN_TTL,
@@ -226,13 +223,19 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
         )
 
         # In local isolated staging without live Telegram network, ensure bot_username and pre-seed OTP 123456
+        # Strictly restricted to synthetic test environments — NEVER in production!
         staging_otp: str | None = None
-        if getattr(settings, "LOCAL_STAGING", False):
+        is_isolated_staging = (
+            getattr(settings, "LOCAL_STAGING", False)
+            and getattr(settings, "ENVIRONMENT", "") != "production"
+            and not os.environ.get("RENDER")
+        )
+        if is_isolated_staging:
             if not bot_username:
                 bot_username = "p2p_staging_bot"
             synthetic_tg_id = 900000000 + (user.id.int % 100000000)
             await redis_client.setex(f"{OTP_PREFIX}{user.id}", OTP_TTL, f"123456:{synthetic_tg_id}")
-            logger.info("LOCAL STAGING: Auto-generated OTP 123456 for %s (tg_id=%s)", user.school21_login, synthetic_tg_id)
+            logger.info("LOCAL STAGING: Auto-generated synthetic OTP 123456 for %s (tg_id=%s)", user.school21_login, synthetic_tg_id)
             staging_otp = "123456"
 
         return LoginResponse(
@@ -249,38 +252,20 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
 async def verify_code(request: Request, payload: VerifyCodeRequest, db: DbSession):
     """OTP kodni tekshirish — telegram_id ulash va JWT berish."""
 
-    # 1. temp_token dan user_id olish
+    # 1. temp_token dan user_id olish (strictly local/configured Redis)
     user_id_str = await redis_client.get(f"{TEMP_TOKEN_PREFIX}{payload.temp_token}")
+    if not user_id_str:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Temp token yaroqsiz yoki muddati o'tgan")
 
-    # 2. OTP kodni tekshirish (mahalliy yoki Render bot orqali)
-    stored = None
-    if user_id_str:
-        otp_key = f"{OTP_PREFIX}{user_id_str}"
-        stored = await redis_client.get(otp_key)
-
-    # Agar mahalliy Redis da OTP bo'lmasa, demak kod jonli @p2p_corpus_bot (Render) orqali berilgan:
+    # 2. OTP kodni tekshirish
+    otp_key = f"{OTP_PREFIX}{user_id_str}"
+    stored = await redis_client.get(otp_key)
     if not stored:
-        try:
-            async with httpx.AsyncClient(timeout=8.0) as client:
-                res = await client.post(
-                    "https://p2p-o1ex.onrender.com/api/v1/auth/verify-code",
-                    json={"temp_token": payload.temp_token, "code": payload.code},
-                )
-                if res.status_code == 200:
-                    data = res.json()
-                    await redis_client.delete(f"{TEMP_TOKEN_PREFIX}{payload.temp_token}")
-                    return TokenResponse(**data)
-                elif res.status_code in (400, 404, 409):
-                    err_detail = res.json().get("detail", "Kod noto'g'ri yoki muddati o'tgan")
-                    raise HTTPException(res.status_code, err_detail)
-        except HTTPException:
-            raise
-        except Exception as exc:
-            logger.warning("Remote verify-code error: %s", exc)
-
-        if not user_id_str:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Temp token yaroqsiz yoki muddati o'tgan")
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Kod topilmadi. Botdan yangi kod oling.")
+
+    # In production, synthetic 123456 is never accepted
+    if (getattr(settings, "ENVIRONMENT", "") == "production" or os.environ.get("RENDER") == "true") and payload.code == "123456":
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Kod noto'g'ri")
 
     # stored format: "code:telegram_id"
     parts = stored.split(":")
@@ -288,13 +273,17 @@ async def verify_code(request: Request, payload: VerifyCodeRequest, db: DbSessio
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Xato format")
 
     expected_code, telegram_id_str = parts
-    if payload.code != expected_code:
+    # Constant-time comparison to prevent timing attacks
+    if not secrets.compare_digest(payload.code, expected_code):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Kod noto'g'ri")
 
     # 3. telegram_id ni user ga ulash
     user = await db.get(User, uuid.UUID(user_id_str))
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Foydalanuvchi topilmadi")
+
+    if not user.is_active:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Foydalanuvchi faol emas")
 
     # Tekshirish: bu telegram_id boshqa userga bog'langanmi?
     telegram_id = int(telegram_id_str)
@@ -311,8 +300,8 @@ async def verify_code(request: Request, payload: VerifyCodeRequest, db: DbSessio
     user.is_logged_in = True
     await db.commit()
 
-    # 4. Redis tozalash
-    await redis_client.delete(f"{OTP_PREFIX}{user_id_str}")
+    # 4. Redis tozalash (single-use OTP & single-use temp_token)
+    await redis_client.delete(otp_key)
     await redis_client.delete(f"{TEMP_TOKEN_PREFIX}{payload.temp_token}")
 
     return _issue_tokens(user)

@@ -8,14 +8,35 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
 from pathlib import Path
 
-_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-_ENV_PATH = _ROOT_DIR / ".env"
-_PARENT_ENV_PATH = _ROOT_DIR.parent / ".env"
+_BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
+_REPO_ROOT = _BACKEND_DIR.parent
+
+
+def _resolve_env_files() -> tuple[str, ...] | None:
+    # In production or on Render, do not load arbitrary local .env files
+    if os.environ.get("RENDER") == "true" or os.environ.get("ENVIRONMENT") == "production":
+        return None
+
+    # Explicit ENV_FILE takes precedence
+    custom_env = os.environ.get("ENV_FILE")
+    if custom_env and Path(custom_env).is_file():
+        return (custom_env,)
+
+    # Only load verified local repository files: backend/.env or repo_root/.env
+    candidates: list[str] = []
+    backend_env = _BACKEND_DIR / ".env"
+    if backend_env.is_file():
+        candidates.append(str(backend_env))
+    repo_env = _REPO_ROOT / ".env"
+    if repo_env.is_file() and str(repo_env) not in candidates:
+        candidates.append(str(repo_env))
+
+    return tuple(candidates) if candidates else None
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(str(_ENV_PATH), str(_PARENT_ENV_PATH), ".env"),
+        env_file=_resolve_env_files(),
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -62,10 +83,11 @@ class Settings(BaseSettings):
     TELEGRAM_WEBHOOK_URL: str = ""
     TELEGRAM_REQUIRED_CHANNEL: str = ""
     ADMIN_IDS: str = ""  # Comma separated Telegram IDs
+    ENFORCE_TELEGRAM_2FA: bool = False
 
-    # Web Admin (SQLAdmin) Credentials
-    ADMIN_USERNAME: str = "admin"
-    ADMIN_PASSWORD: str = "admin123"
+    # Web Admin (SQLAdmin) Credentials — No default/fallback credentials
+    ADMIN_USERNAME: str = ""
+    ADMIN_PASSWORD: str = ""
 
     # Telegram DevOps Logger (GitHub/Vercel/Error Alerts)
     TELEGRAM_LOGGER_BOT_TOKEN: str = ""
