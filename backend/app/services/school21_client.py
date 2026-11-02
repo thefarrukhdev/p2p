@@ -24,6 +24,11 @@ KEYCLOAK_TOKEN_URL = (
     "https://auth.21-school.ru/auth/realms/EduPowerKeycloak"
     "/protocol/openid-connect/token"
 )
+
+
+def get_keycloak_token_url() -> str:
+    return getattr(settings, "KEYCLOAK_TOKEN_URL", "") or KEYCLOAK_TOKEN_URL
+
 KEYCLOAK_CLIENT_ID = "s21-open-api"
 
 # WAF oldidagi proxy bot user-agent larni bloklaydi.
@@ -73,7 +78,7 @@ class School21Client:
     async def login(self, login: str, password: str) -> dict[str, Any]:
         """Keycloak password grant — access_token, refresh_token qaytaradi."""
         resp = await self.auth_client.post(
-            KEYCLOAK_TOKEN_URL,
+            get_keycloak_token_url(),
             data={
                 "client_id": KEYCLOAK_CLIENT_ID,
                 "grant_type": "password",
@@ -87,7 +92,7 @@ class School21Client:
 
     async def refresh_school21_token(self, refresh_token: str) -> dict[str, Any]:
         resp = await self.auth_client.post(
-            KEYCLOAK_TOKEN_URL,
+            get_keycloak_token_url(),
             data={
                 "client_id": KEYCLOAK_CLIENT_ID,
                 "grant_type": "refresh_token",

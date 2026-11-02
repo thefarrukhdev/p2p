@@ -13,6 +13,7 @@ export interface LoginResponse {
   onboarding_done: boolean;
   temp_token?: string | null;
   bot_url?: string | null;
+  staging_otp?: string | null;
 }
 
 export interface VerifyCodeRequest {

@@ -44,6 +44,12 @@ export default function LoginPage() {
   const [showOtp, setShowOtp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const botUrl =
+    loginData?.bot_url ||
+    (loginData?.temp_token
+      ? `https://t.me/p2p_corpus_bot?start=${loginData.temp_token}`
+      : null);
+
   const {
     register: loginRegister,
     handleSubmit: handleLoginSubmit,
@@ -374,14 +380,14 @@ export default function LoginPage() {
                     <p className="text-xs text-[#B0BEC5] leading-relaxed">
                       {t('login.otpDescription')}
                     </p>
-                    {loginData?.bot_url && (
+                    {botUrl && (
                       <a
-                        href={loginData.bot_url}
+                        href={botUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center gap-2 py-2.5 px-4 min-h-[44px] text-xs font-bold font-montserrat uppercase tracking-wider text-white bg-[#229ED9] hover:bg-[#1E8DCE] rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                       >
-                        <Send className="w-3.5 h-3.5" />
+                        <Send className="w-3.5 h-3.5" aria-hidden="true" />
                         <span>{t('login.openBot')}</span>
                       </a>
                     )}

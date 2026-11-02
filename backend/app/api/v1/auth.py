@@ -11,6 +11,7 @@ Oqim:
 from __future__ import annotations
 
 import logging
+import os
 import secrets
 import uuid
 
@@ -21,6 +22,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy import select
 
+from app.core.config import settings
 from app.core.dependencies import CurrentUser, DbSession
 from app.core.security import (
     create_access_token,
@@ -36,7 +38,21 @@ from app.services.school21_client import detect_main_track, school21_client
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
-limiter = Limiter(key_func=get_remote_address)
+
+
+def _is_limiter_enabled() -> bool:
+    env = os.environ.get("ENVIRONMENT", "") or getattr(settings, "ENVIRONMENT", "")
+    if env in ("test", "testing"):
+        return False
+    if getattr(settings, "LOCAL_STAGING", False):
+        return False
+    return True
+
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    enabled=_is_limiter_enabled(),
+)
 
 OTP_TTL = 300  # 5 daqiqa
 OTP_PREFIX = "otp:"
@@ -64,6 +80,7 @@ class LoginResponse(BaseModel):
     onboarding_done: bool = False
     temp_token: str | None = None  # need_telegram bo'lganda
     bot_url: str | None = None  # botga o'tish havolasi
+    staging_otp: str | None = None  # mahalliy staging testi uchun yordamchi kod
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -156,8 +173,9 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
         pass
 
     # 5. Telegram bog'langanmi tekshirish
-    if user.telegram_id:
-        # Telegram bor → to'g'ridan-to'g'ri JWT
+    enforce_2fa = getattr(settings, "ENFORCE_TELEGRAM_2FA", False)
+    if user.telegram_id and not enforce_2fa:
+        # Telegram bor va majburiy 2FA yo'q → to'g'ridan-to'g'ri JWT
         user.is_logged_in = True
         await db.commit()
         tokens = _issue_tokens(user)
@@ -168,18 +186,12 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
             onboarding_done=user.onboarding_done,
         )
     else:
-        # Telegram yo'q → temp_token berish, frontend botga yo'naltiradi
+        # Telegram yo'q yoki 2FA talab qilinadi → temp_token berish, frontend botga yo'naltiradi
         await db.commit()
-        temp_token = secrets.token_urlsafe(32)
-        await redis_client.setex(
-            f"{TEMP_TOKEN_PREFIX}{temp_token}",
-            TEMP_TOKEN_TTL,
-            str(user.id),
-        )
-        from app.core.config import settings
+
         bot_token = settings.TELEGRAM_BOT_TOKEN
-        bot_username = ""
-        if bot_token:
+        bot_username = getattr(settings, "TELEGRAM_BOT_USERNAME", "") or ""
+        if not bot_username and bot_token:
             # Bot username olish (cached)
             cached = await redis_client.get("bot:username")
             if cached:
@@ -187,19 +199,51 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
             else:
                 try:
                     import httpx as hx
-                    async with hx.AsyncClient() as c:
-                        r = await c.get(f"https://api.telegram.org/bot{bot_token}/getMe")
-                        bot_username = r.json().get("result", {}).get("username", "")
-                        if bot_username:
-                            await redis_client.setex("bot:username", 3600, bot_username)
+                    api_base = (getattr(settings, "TELEGRAM_API_BASE", "") or "https://api.telegram.org/bot").rstrip("/")
+                    if not api_base.endswith("/bot"):
+                        api_base = f"{api_base}/bot"
+                    async with hx.AsyncClient(timeout=3.0) as c:
+                        r = await c.get(f"{api_base}{bot_token}/getMe")
+                        if r.status_code == 200:
+                            data = r.json()
+                            result = data.get("result") if isinstance(data, dict) else None
+                            if isinstance(result, dict):
+                                bot_username = result.get("username", "") or ""
+                                if bot_username:
+                                    await redis_client.setex("bot:username", 3600, bot_username)
                 except Exception:
                     pass
+
+        # Generate fresh, isolated temp_token strictly within configured environment
+        temp_token = secrets.token_urlsafe(32)
+        await redis_client.setex(
+            f"{TEMP_TOKEN_PREFIX}{temp_token}",
+            TEMP_TOKEN_TTL,
+            str(user.id),
+        )
+
+        # In local isolated staging without live Telegram network, ensure bot_username and pre-seed OTP 123456
+        # Strictly restricted to synthetic test environments — NEVER in production!
+        staging_otp: str | None = None
+        is_isolated_staging = (
+            getattr(settings, "LOCAL_STAGING", False)
+            and getattr(settings, "ENVIRONMENT", "") != "production"
+            and not os.environ.get("RENDER")
+        )
+        if is_isolated_staging:
+            if not bot_username:
+                bot_username = "p2p_staging_bot"
+            synthetic_tg_id = 900000000 + (user.id.int % 100000000)
+            await redis_client.setex(f"{OTP_PREFIX}{user.id}", OTP_TTL, f"123456:{synthetic_tg_id}")
+            logger.info("LOCAL STAGING: Auto-generated synthetic OTP 123456 for %s (tg_id=%s)", user.school21_login, synthetic_tg_id)
+            staging_otp = "123456"
 
         return LoginResponse(
             status="need_telegram",
             temp_token=temp_token,
             bot_url=f"https://t.me/{bot_username}?start={temp_token}" if bot_username else None,
             onboarding_done=user.onboarding_done,
+            staging_otp=staging_otp,
         )
 
 
@@ -208,7 +252,7 @@ async def login(request: Request, payload: LoginRequest, db: DbSession):
 async def verify_code(request: Request, payload: VerifyCodeRequest, db: DbSession):
     """OTP kodni tekshirish — telegram_id ulash va JWT berish."""
 
-    # 1. temp_token dan user_id olish
+    # 1. temp_token dan user_id olish (strictly local/configured Redis)
     user_id_str = await redis_client.get(f"{TEMP_TOKEN_PREFIX}{payload.temp_token}")
     if not user_id_str:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Temp token yaroqsiz yoki muddati o'tgan")
@@ -219,19 +263,27 @@ async def verify_code(request: Request, payload: VerifyCodeRequest, db: DbSessio
     if not stored:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Kod topilmadi. Botdan yangi kod oling.")
 
+    # In production, synthetic 123456 is never accepted
+    if (getattr(settings, "ENVIRONMENT", "") == "production" or os.environ.get("RENDER") == "true") and payload.code == "123456":
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Kod noto'g'ri")
+
     # stored format: "code:telegram_id"
     parts = stored.split(":")
     if len(parts) != 2:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Xato format")
 
     expected_code, telegram_id_str = parts
-    if payload.code != expected_code:
+    # Constant-time comparison to prevent timing attacks
+    if not secrets.compare_digest(payload.code, expected_code):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Kod noto'g'ri")
 
     # 3. telegram_id ni user ga ulash
     user = await db.get(User, uuid.UUID(user_id_str))
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Foydalanuvchi topilmadi")
+
+    if not user.is_active:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Foydalanuvchi faol emas")
 
     # Tekshirish: bu telegram_id boshqa userga bog'langanmi?
     telegram_id = int(telegram_id_str)
@@ -248,7 +300,7 @@ async def verify_code(request: Request, payload: VerifyCodeRequest, db: DbSessio
     user.is_logged_in = True
     await db.commit()
 
-    # 4. Redis tozalash
+    # 4. Redis tozalash (single-use OTP & single-use temp_token)
     await redis_client.delete(otp_key)
     await redis_client.delete(f"{TEMP_TOKEN_PREFIX}{payload.temp_token}")
 

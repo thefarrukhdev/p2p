@@ -4,6 +4,8 @@ Faqat is_admin=True bo'lgan foydalanuvchilar admin panelga kira oladi.
 """
 from __future__ import annotations
 
+import secrets
+
 from fastapi import FastAPI
 from sqladmin import Admin, ModelView
 from sqladmin.authentication import AuthenticationBackend
@@ -28,15 +30,39 @@ class AdminAuth(AuthenticationBackend):
 
     async def login(self, request: Request) -> bool:
         form = await request.form()
-        login = form.get("username", "")
-        password = form.get("password", "")
+        login = str(form.get("username", "") or "").strip()
+        password = str(form.get("password", "") or "").strip()
 
-        # Admin panel uchun .env dagi SECRET_KEY orqali tekshirish
-        # Yoki School21 login ishlatish
         if not login or not password:
             return False
 
-        # School21 orqali autentifikatsiya
+        # Insecure default credentials MUST be rejected unconditionally
+        if login.lower() == "admin" and password == "admin123":
+            return False
+
+        # 1. Break-glass admin credential ONLY if explicitly configured with high entropy
+        configured_admin_user = (getattr(settings, "ADMIN_USERNAME", "") or "").strip()
+        configured_admin_pass = (getattr(settings, "ADMIN_PASSWORD", "") or "").strip()
+
+        INSECURE_CREDS = {
+            ("admin", "admin123"),
+            ("admin", "admin"),
+            ("superadmin", "superadmin"),
+            ("root", "root"),
+        }
+
+        if (
+            configured_admin_user
+            and configured_admin_pass
+            and (configured_admin_user.lower(), configured_admin_pass) not in INSECURE_CREDS
+            and len(configured_admin_pass) >= 12
+        ):
+            if secrets.compare_digest(login, configured_admin_user) and secrets.compare_digest(password, configured_admin_pass):
+                token = create_access_token("superadmin", {"admin": True, "sub": "superadmin"})
+                request.session.update({"admin_token": token})
+                return True
+
+        # 2. Database administrator authentication via School21
         from app.services.school21_client import school21_client
         import httpx
 
@@ -46,18 +72,18 @@ class AdminAuth(AuthenticationBackend):
         except (httpx.HTTPStatusError, Exception):
             return False
 
-        # DB dan is_admin tekshirish
+        # DB dan is_active va is_admin tekshirish
         from sqlalchemy import select
 
         async with AsyncSessionLocal() as db:
             user = (
                 await db.execute(select(User).where(User.school21_login == login))
             ).scalar_one_or_none()
-            if user is None or not user.is_admin:
+            if user is None or not user.is_active or not user.is_admin:
                 return False
 
         # Session da JWT token saqlash
-        token = create_access_token(str(user.id), {"admin": True})
+        token = create_access_token(str(user.id), {"admin": True, "sub": str(user.id)})
         request.session.update({"admin_token": token})
         return True
 
@@ -74,6 +100,32 @@ class AdminAuth(AuthenticationBackend):
         if payload is None or not payload.get("admin"):
             request.session.clear()
             return RedirectResponse(request.url_for("admin:login"), status_code=302)
+
+        sub = payload.get("sub")
+        if not sub:
+            request.session.clear()
+            return RedirectResponse(request.url_for("admin:login"), status_code=302)
+
+        # Enforce active-user and admin authorization check
+        if sub == "superadmin":
+            configured_admin_user = (getattr(settings, "ADMIN_USERNAME", "") or "").strip()
+            configured_admin_pass = (getattr(settings, "ADMIN_PASSWORD", "") or "").strip()
+            if not configured_admin_user or not configured_admin_pass or len(configured_admin_pass) < 12:
+                request.session.clear()
+                return RedirectResponse(request.url_for("admin:login"), status_code=302)
+        else:
+            try:
+                import uuid
+                user_uuid = uuid.UUID(sub)
+                async with AsyncSessionLocal() as db:
+                    user = await db.get(User, user_uuid)
+                    if user is None or not user.is_active or not user.is_admin:
+                        request.session.clear()
+                        return RedirectResponse(request.url_for("admin:login"), status_code=302)
+            except Exception:
+                request.session.clear()
+                return RedirectResponse(request.url_for("admin:login"), status_code=302)
+
         return True
 
 

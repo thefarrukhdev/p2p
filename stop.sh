@@ -15,4 +15,7 @@ for pidfile in "$PID_DIR"/*.pid; do
     fi
     rm -f "$pidfile"
 done
+pkill -f "uvicorn app.main:app" 2>/dev/null || true
+pkill -f "vite --port=5173" 2>/dev/null || true
+pkill -f "socat TCP-LISTEN:5174" 2>/dev/null || true
 echo "Tayyor."

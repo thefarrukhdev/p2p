@@ -81,7 +81,7 @@ command -v npm >/dev/null     || err "npm topilmadi"
 # ── 2. PostgreSQL ─────────────────────────────────────────────────
 info "PostgreSQL tekshiruvi..."
 if ! check_port 5432; then
-    sudo systemctl start postgresql 2>/dev/null || true
+    docker start p2p-postgres 2>/dev/null || sudo systemctl start postgresql 2>/dev/null || true
     if ! check_port 5432; then
         warn "PostgreSQL (port 5432) ishlamayapti. (Local DB ni ishga tushirish talab etiladi)"
     else
@@ -94,7 +94,7 @@ fi
 # ── 3. Redis ──────────────────────────────────────────────────────
 info "Redis tekshiruvi..."
 if ! check_port 6379; then
-    sudo systemctl start redis valkey 2>/dev/null || true
+    docker start p2p-redis 2>/dev/null || sudo systemctl start redis valkey 2>/dev/null || true
     if ! check_port 6379; then
         warn "Redis (port 6379) ishlamayapti. (Local Redis ni ishga tushirish talab etiladi)"
     else
@@ -141,15 +141,16 @@ log "Migratsiyalar bajarildi"
 
 # ── 8. Backend API ────────────────────────────────────────────────
 echo ""
-info "Backend API ishga tushirilmoqda (port 18000)..."
-(cd "$BACKEND_DIR" && "$VENV/bin/uvicorn" app.main:app --host 0.0.0.0 --port 18000 --reload \
+BACKEND_PORT="${PORT:-8000}"
+info "Backend API ishga tushirilmoqda (port ${BACKEND_PORT})..."
+(cd "$BACKEND_DIR" && "$VENV/bin/uvicorn" app.main:app --host 0.0.0.0 --port "${BACKEND_PORT}" --reload \
     > "$LOG_DIR/api.log" 2>&1) &
 echo $! > "$PID_DIR/api.pid"
-wait_for_port 18000 "Backend API"
+wait_for_port "${BACKEND_PORT}" "Backend API"
 
 # ── 9. Celery Worker ─────────────────────────────────────────────
 info "Celery Worker ishga tushirilmoqda..."
-(cd "$BACKEND_DIR" && "$VENV/bin/celery" -A app.tasks.celery_app.celery_app worker --loglevel=info \
+(cd "$BACKEND_DIR" && "$VENV/bin/celery" -A app.tasks.celery_app.celery_app worker --loglevel=info --pool=solo \
     > "$LOG_DIR/celery_worker.log" 2>&1) &
 echo $! > "$PID_DIR/celery_worker.pid"
 log "Celery Worker ishga tushdi"
@@ -168,12 +169,19 @@ info "Frontend dev server ishga tushirilmoqda (port 5173)..."
 echo $! > "$PID_DIR/frontend.pid"
 wait_for_port 5173 "Frontend"
 
+# Port 5174 ni 5173 ga forward qilish (brauzerda 5174 ochilgan bo'lsa)
+if command -v socat >/dev/null 2>&1; then
+    (socat TCP-LISTEN:5174,fork,reuseaddr TCP:127.0.0.1:5173 > /dev/null 2>&1) &
+    echo $! > "$PID_DIR/proxy_5174.pid"
+    log "Frontend port 5174 -> 5173 yo'naltirildi"
+fi
+
 # ── 12. Telegram Bot ──────────────────────────────────────────────
 info "Telegram Bot ishga tushirilmoqda..."
 (cd "$BACKEND_DIR" && "$VENV/bin/python" -m bot.main \
     > "$LOG_DIR/bot.log" 2>&1) &
 echo $! > "$PID_DIR/bot.pid"
-log "Telegram Bot ishga tushdi"
+log "Telegram Bot ishga tushdi (log: $LOG_DIR/bot.log)"
 
 # ── Done ──────────────────────────────────────────────────────────
 echo ""
@@ -181,13 +189,16 @@ echo -e "${GREEN}═════════════════════
 echo -e "${GREEN}   Barcha servislar muvaffaqiyatli ishga tushdi!${NC}"
 echo -e "${GREEN}══════════════════════════════════════════════════════${NC}"
 echo ""
-echo -e "  ${BLUE}Frontend:${NC}    http://localhost:5173"
-echo -e "  ${BLUE}Backend API:${NC} http://localhost:18000"
-echo -e "  ${BLUE}Swagger:${NC}     http://localhost:18000/docs"
-echo -e "  ${BLUE}Admin:${NC}       http://localhost:18000/admin"
+echo -e "  ${BLUE}Frontend (Dev):${NC}    http://localhost:5173"
+echo -e "  ${BLUE}Frontend (Tab):${NC}    http://127.0.0.1:5174"
+echo -e "  ${BLUE}Backend API:${NC}       http://localhost:${BACKEND_PORT}"
+echo -e "  ${BLUE}Swagger:${NC}           http://localhost:${BACKEND_PORT}/docs"
+echo -e "  ${BLUE}Admin:${NC}             http://localhost:${BACKEND_PORT}/admin"
+echo -e "  ${BLUE}Redis:${NC}             redis://localhost:6379/0"
+echo -e "  ${BLUE}Database:${NC}          Render Postgres / Local Postgres"
 echo ""
-echo -e "  ${YELLOW}Loglar:${NC}      $LOG_DIR/"
-echo -e "  ${YELLOW}To'xtatish:${NC}  Ctrl+C"
+echo -e "  ${YELLOW}Loglar:${NC}            $LOG_DIR/"
+echo -e "  ${YELLOW}To'xtatish:${NC}        ./stop.sh yoki Ctrl+C"
 echo ""
 
 # Servislar ishlayotganini kuzatish
